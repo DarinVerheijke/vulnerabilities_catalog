@@ -123,7 +123,7 @@
 %%
 %% The "title" command has an optional parameter,
 %% allowing the author to define a "short title" to be used in page headers.
-\title{Solidity Smart Contracts: Vulnerabilities Catalog}
+\title{Solidity Smart Contracts: Language constructs for control/currency exchange and guards}
 
 %%
 %% The "author" command and its associated commands are used to define
@@ -418,7 +418,7 @@ A database of verified smart contracts was collected from Etherscan which is a b
 A more specific overview of the amount of contracts per month can be found in the chart \ref{fig:database}. This chart gives an overview of all the unique contracts that were collected per month.
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{img/barchart_dates_v2.PNG}
+  \includegraphics[width=\linewidth]{img/collected_contracts.PNG}
   \caption{An overview of the amount of contracts collected each month. The collection started in July which is the reason for the initial 10,000 contracts. Interesting to mention is that starting mid-september, Etherscan has reduced the available verified smart contracts to download to only 5000. The small collection of January is due to only retrieving the database once at the start of the month.}
   \Description{Smart Contracts per month}
   \label{fig:database}
@@ -477,13 +477,21 @@ After an initial calculation we get the following values for the amount of lines
     \item Max LOC: 9452
 \end{itemize}
 
-Another piece of data we will take a look at are the different versions of Solidity used in each contract. We plot the 30 most used versions in the following bar chart Figure \ref{fig:compiler}. We can notice that three versions are used in more than half of the database namely v0.6.12, v0.8.4 and v0.8.7. The specific amount of contracts for each version and the percentage of the database that have that contract version can be found in Table \ref{tab:versions}
+Another piece of data we will take a look at are the different versions of Solidity used in each contract. We plot the 30 most used versions in the following bar chart Figure \ref{fig:compiler} and also plot these versions by only looking at the major version \ref{fig:compiler_major}. We can notice that three versions are used in more than half of the database namely v0.6.12, v0.8.4 and v0.8.7. The specific amount of contracts for each version and the percentage of the database that have that contract version can be found in Table \ref{tab:versions}
 \begin{figure}[h]
   \centering
   \includegraphics[width=\linewidth]{img/versions_v3.png}
   \caption{An overview of the top 10 solidity compiler versions used and the amount of contracts in the database that use that specific version. }
   \Description{Solidity Compiler Version}
   \label{fig:compiler}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{img/major_versions.png}
+  \caption{An overview of the top solidity compiler versions used and the amount of contracts in the database that use that version, where we go into a higher level and only look at the major version. }
+  \Description{Solidity Compiler Version}
+  \label{fig:compiler_major}
 \end{figure}
 
 \begin{table}
@@ -504,6 +512,22 @@ Another piece of data we will take a look at are the different versions of Solid
     0.5.0&857&3.20\%\\
     0.8.10&768&2.87\%\\
     Other&5394&20.13\%\\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+  \caption{Compiler Versions (Major)}
+  \label{tab:versions}
+  \begin{tabular}{ccl}
+    \toprule
+    Solidity Version & \# Contracts & \% Percentage\\
+    \midrule
+    0.8&14869&55.48\%\\
+    0.6&5839&21.79\%\\
+    0.5&2954&11.02\%\\
+    0.7&2454&9.16\%\\
+    0.4&684&2.55\%\\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -554,8 +578,6 @@ Table \ref{tab:call} will now show us different statistics for this specific sel
   \label{fig:call_version}
 \end{figure}
 
-
-
 \begin{table}
   \caption{Statistics of Contracts containing call function}
   \label{tab:call}
@@ -580,7 +602,91 @@ Table \ref{tab:call} will now show us different statistics for this specific sel
 \end{tabular}
 \end{table}
 
+We will do a similar analysis on both the send and transfer function. Looking at the versions in Figure \ref{fig:send_version} we can see that for the send function the top 5 versions are completely similar to the top 5 versions of the whole contract database. This is partly due to the fact that 66\% of the contracts of our whole database have a send function. If we look at the versions of transfer in Figure \ref{fig:transfer_version} we notice that both v0.8.4 and 0.6.12 are not even in the top 10 versions which is interesting. A version that also showed up in the top 10 of call versions namely v0.4.24 shows up here. This signifies that both call and transfer functions were used more often in v0.4 and that since then there was a shift to the send function. 
 
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{img/sends_versions.png}
+  \caption{An overview of all the specific compiler versions used in contracts that contain a send function. }
+  \Description{Solidity Compiler Version (Sends)}
+  \label{fig:send_version}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{img/transfers_versions.png}
+  \caption{An overview of all the specific compiler versions used in contracts that contain a transfer function. }
+  \Description{Solidity Compiler Version (Transfers)}
+  \label{fig:transfer_version}
+\end{figure}
+
+If we calculate the LOC statistics for both contracts containing send functions and contracts containing transfer functions we get the statistics in Table \ref{tab:loc}. Contracts containing a transfer function seem to be a lot longer on average (almost twice as long) in comparison with the average length of a smart contract. A contract containing a send function is pretty similar in length in comparison with the average smart contract.
+\begin{table}
+  \caption{LOC Statistics for send and transfer}
+  \label{tab:loc}
+  \begin{tabular}{ccl}
+    \toprule
+    Statistic & Send & Transfer\\
+    \midrule
+    Average&832&1453\\
+    Mean&553&1378\\
+    Std Dev&741.78&841.18\\
+    Min&10&20\\
+    Max&9452&9452\\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+Of all contracts containing a send functions there are almost on average two send functions per contract with the highest amount of send functions used in any contract being 68. This is by far the most used way of transferring Ether in the database that we collected. The transfer function is present in a lot less contracts but when it is used, the average of times it is in a contract is around 1.63 times with the highest amount being 12. 
+We will now look at the different functions present in both cases in a similar way we did for the call function for which the results can be found in Table \ref{tab:send} and Table \ref{tab:transfer}. For the contracts containing a send function we notice that they almost always include atleast one require guard as well. The average of require guards used in a contract containing a transfer function is however higher in comparison with the average of contracts that contain a send function. We can also see that the average of both assert guards and throws are higher for contracts containing a send function than the transfer function. If we now compare some of these statistics to the numbers of the contracts containing a call function we immediately see that those contracts have a lot more guards. These due to the fact that both transfer and send are considered safer functions and thus a call function by design will need to utilize more guards for it to not be exploited.
+
+\begin{table}
+  \caption{Statistics of Contracts containing send function}
+  \label{tab:send}
+  \begin{tabular}{ccl}
+    \toprule
+    Function & \# Contracts & \# Functions\\
+    \midrule
+    Call&153&226\\
+    Transfer&107&251\\
+    Require&9060&256835\\
+    Assert&2722&4789\\
+    Throws&1507&4338\\
+    \toprule
+    Function & Avg/contract\\
+    \midrule
+    Call&0.0246\\
+    Transfer&0.0274\\
+    Require&27.9898\\
+    Assert&0.5219\\
+    Throws&0.4727\\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+  \caption{Statistics of Contracts containing transfer function}
+  \label{tab:transfer}
+  \begin{tabular}{ccl}
+    \toprule
+    Function & \# Contracts & \# Functions\\
+    \midrule
+    Call&18&20\\
+    Send&107&234\\
+    Require&647&25058\\
+    Assert&63&166\\
+    Throws&53&224\\
+    \toprule
+    Function & Avg/contract\\
+    \midrule
+    Call&0.0309\\
+    Send&0.3616\\
+    Require&38.7295\\
+    Assert&0.2566\\
+    Throws&0.3462\\
+  \bottomrule
+\end{tabular}
+\end{table}
 \section{Related work}
 
 
