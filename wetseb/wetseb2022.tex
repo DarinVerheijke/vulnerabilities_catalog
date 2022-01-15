@@ -264,7 +264,9 @@ Here the attacker will call the transfer function when the code is executed on a
 
 We collected verified smart contracts from Etherscan\footnote{\url{etherscan.io/contractsVerified}} which is a block explorer and analytic platform for Ethereum. Etherscan verified contracts allows the public to audit and read contracts as it has to be made publicly available to be granted the verified status. Etherscan does not give access to a complete dataset of verified smart contracts but rather has an open source database of the latest 10,000-5,000 smart contracts that were verified. Therefore, we gathered the latest contracts from time to time, over a period of six months (2021-07-07 to 2022-01-06) to build our dataset.
 
-Then, we did following pre-processing steps in our dataset: (i) remove all duplicated contracts; (ii) remove contracts not written in Solidity; (iii) removed contracts with zero lines of code. After removing those contracts, we had a total of 26,800 unique verified solidity smart contracts. Figure~\ref{fig:dataset} shows the amount of contracts per month in our dataset. This dataset is publicly available.\footnote{\url{https://bit.ly/3fyOgBD}, the link has been properly anonymized for the reviewers to download the dataset spreadsheet with the name and address of the contracts and not break the double-blind review process. }
+Then, we did the following pre-processing steps in our dataset: (i) remove all duplicated\footnote{We removed contracts with the same address in the Ethereum blockchain. We did not verified whether the contracts with the same name have the same source code. Since these contracts have different addresses, they are considered separate entities in the blockchain platform.} contracts; (ii) remove contracts not written in Solidity; (iii) removed contracts with zero lines of code. After removing those contracts, we had a total of 26,800 unique verified solidity smart contracts. This dataset is publicly available.\footnote{\url{https://bit.ly/3fyOgBD}, the link has been properly anonymized for the reviewers to download the dataset spreadsheet with the name and address of the contracts and not break the double-blind review process.} 
+
+Figure~\ref{fig:dataset} shows the amount of contracts per month in our dataset. The month refers to the date the contract was verified in Etherscan, and not the date it was deployed in the Ethereum network. 
 
 \begin{figure}[h]
   \centering
@@ -286,6 +288,8 @@ https://api.etherscan.io/api?module=contract
 Then, we analyzed each contract characteristics (lines of code, solidity version) and language constructs looking specifically for Ether exchange functions (call, send, and transfer) and guards (require, and assert). 
 
 \section{Analysis and Results}
+
+\subsection{General Code Characteristics}
 
 First, we show some general characteristics on our dataset.
 Table~\ref{tab:loc} shows the general statistics considering the lines of code on the contract. We can see that the contracts in our dataset are small in lines of codes. That is expected, as smart contract code tends to be smaller when compared to software code in other domains. ** Which contract is the biggest? an example of the smallest contract **.
@@ -349,17 +353,11 @@ We will now dive deeper into the source contracts themselves and have a look at 
     Assert&7279&10,507\\
     Throws&4174&10,590\\
     \hline
-    Function & Avg/contract\\
-    \hline
-    Call&0.014\\
-    Send&0.665\\
-    Transfer&0.0396\\
-    Require&23.235\\
-    Assert&0.392\\
-    Throws&0.395\\
-  \hline
 \end{tabular}
 \end{table}
+
+\subsection{Ether Exchange Functions}
+
 The next experiment will focus more on those contracts that contain a call.value function, all previous statistics will be recalculated for only the smart contracts containing a call.value function to see if there are any similarities but first we will take a look at which version is used most in these contracts.
 Figure \ref{fig:call_version}. The most used version is v0.5.17 which was the 5th most used version in all our contracts. A more interesting finding is that there are only 4 contracts above v0.6 that contain a call function of which 3 are from the compiler version that was most used by the complete database namely v0.8.4. For the line of code statistics we get the following values:
 \begin{itemize}
