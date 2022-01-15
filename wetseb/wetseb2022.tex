@@ -255,12 +255,15 @@ function withdrawBalance() public {
 }
 
 \end{lstlisting}
-Here the attacker will call the transfer function when the code is executed on an external call in \texttt{withdrawBalance()},  again the user's balance is not yet set to 0 and thus they will be able to transfer tokens again. A simple solution to both these types of attacks is updating the balance before transferring control to another function or contract.  Another simple solution would be to use transfer or send (the safer-by-design constracuts) instead of call.
+Here the attacker will call the transfer function when the code is executed on an external call in \texttt{withdrawBalance()},  again the user's balance is not yet set to 0 and thus they will be able to transfer tokens again. A simple solution to both these types of attacks is updating the balance before transferring control to another function or contract.  Another simple solution would be to use transfer or send (the safer-by-design constructs) instead of call.
 
 
 
 \section{Study Design}
 \subsection{Dataset}
+
+We collected verified smart contracts from Etherscan~\footnote{\url{etherscan.io/contractsVerified}}
+
 A database of verified smart contracts was collected from Etherscan which is a block explorer and analytics platform for Ethereum. Verifying a contract is a trivial task on etherscan but it allows the public to audit and read the contract as it has to be made publicly available to be granted the verified status. Etherscan does not give access to a complete dataset of verified smart contracts but rather has an open source database of the latest 10 000 smart contracts that were verified. This open source database was collected at different times during a period of 7 months to create the database that was used for the analysis starting at the 7th of July 2021 and ending January 6th of 2022. The first step we will do is remove all duplicate contracts and as a final pre-processing step which will only be possible after collecting the compiler version, all vyper contracts will be removed as the focus of this paper is on the Solidity language only. After this step we are left with a total of 28,209 contracts. The next step we do is removing all contracts that have 0 LOC as these contracts will not provide any value to our analysis. After removing those contracts we are left with a total of 26,800 available unique verified smart contracts.
 A more specific overview of the amount of contracts per month can be found in the chart \ref{fig:database}. This chart gives an overview of all the unique contracts that were collected per month.
 \begin{figure}[h]
