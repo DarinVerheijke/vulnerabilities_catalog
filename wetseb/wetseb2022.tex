@@ -154,7 +154,7 @@ A smart contract is a contract which executes automatically when called upon whe
 
 A common functionality of smart contracts is the possibility to make calls to another contract on the same blockchain platform. This however needs to be done with caution as untrusted contracts can not only introduce errors but also risks as the contract or call may execute malicious code and exploit vulnerabilities. Every call transfers execution control to the called contract.
 
-One of these dangers when calling an external contract is called Reentrancy and is one of the most well known attacks due to the DAO Attack on June 17th 2016 where around 3.6 million Ether was taken which equated to around \$50 million dollar at the time \cite{10.1007/978-3-662-54455-6_8}. This exploit is cemented in the history of Ethereum as it resulted into Ethereum being forked into Ethereum Classic and the Ethereum we know today. The original version of this attack involved functions that would be called repeatedly before the first function was finished. 
+One of these dangers when calling an external contract is called reentrancy and is one of the most well known attacks due to the DAO Attack on June 2016 where around 3.6 million Ether was taken which equated to around \$50 million dollar at the time \cite{10.1007/978-3-662-54455-6_8}. This exploit is cemented in the history of Ethereum as it resulted into Ethereum being forked into Ethereum Classic and the Ethereum we know today. The original version of this attack involved functions that would be called repeatedly before the first function was finished. 
 
 Solidity is one of the major programming languages for smart contracts on Ethereum. To avoid these exploits there have been introduced some best practices. More specifically the function call() was to be replaced by the more safe functions transfer() and send().  However, recently there has been a switch back to the call() function with the introduction of EIP 1884 \cite{eip1884}.  Other precautions instead must be taken to prevent reentrancy attacks, one recommendation is making use of safe code patterns and using guard constructs. 
 
@@ -193,16 +193,16 @@ We like to highlight the language constructs use to exchange cryptocurrency amon
     \hline
     call.value & Custom & Returns false on failure\\
     transfer & 2300 & Throws exception on failure\\
-    send&2300& Returns false on failure\\
+    send & 2300 & Returns false on failure\\
   \hline
 \end{tabular}
 \end{table}
 
 The call function is a low-level interface for sending a message to a contract and it is also a way to send Ether to another address.  The call function transfers the execution control to the called contract and the caller can forward any amount of gas.  Therefore,  the call function has the potential to introduce vulnerabilities, most notably reentrancy.  
 
-The tranfer method was first introduced in the version 0.4.10 (May 2017) of the Solidity language.  It provides a safe-by-design method to transfer cryptocurrency.  Even though, this method also transfers the execution control to the caller,  it has a gas limit which prevents abuse.  If the transfers fails,  an exception is raised, which also adds to the security of this method as the exception reverts the transaction.  Due to automatically reverting in case of errors, the transfer function is recommended in most cases. 
+The transfer method was first introduced in the version 0.4.10 (May 2017) of the Solidity language.  It provides a safe-by-design method to transfer cryptocurrency.  Even though, this method also transfers the execution control to the caller,  it has a gas limit which prevents abuse.  If the transfers fails,  an exception is raised, which also adds to the security of this method as the exception reverts the transaction.  Due to automatically reverting in case of errors, the transfer function is recommended in most cases. 
 
-The send function can be seem as a lower level implementation of transfer.  Similar to transfer,  it provides a safe-by-design function to transfer cryptocurrency,  with a gas limit to prevent exploits. The major difference between send and transfer, is that send returns false if it fails, delegating the error handling to the developer.
+The send function can be seem as a lower level implementation of transfer. Similar to transfer,  it provides a safe-by-design function to transfer cryptocurrency,  with a gas limit to prevent exploits. The major difference between send and transfer, is that send returns false if it fails, delegating the error handling to the developer.
 
 \subsubsection{Solidity Guards}
 
@@ -237,7 +237,7 @@ function () public payable {
 In this example an attacker can recursively call the \texttt{withdrawBalance()} function and drain the whole contract as the user's balance is only set to 0 at the very end of the function.
 
 \subsubsection{Cross-function reentrancy attack}
-When a function shares a state with another function there is a possibility of a cross-function reentrancy attack.  Listing~\ref{lst:reentrancy2}  shows a code snipped with a cross-function reentracy vulnerability. 
+When a function shares a state with another function there is a possibility of a cross-function reentrancy attack.  Listing~\ref{lst:reentrancy2}  shows a code snipped with a cross-function reentrancy vulnerability. 
 \begin{lstlisting}[language=Solidity, caption=Cross-function reentrancy attack, label=lst:reentrancy2]
 mapping (address => uint) private userBalances;
 
@@ -262,125 +262,77 @@ Here the attacker will call the transfer function when the code is executed on a
 \section{Study Design}
 \subsection{Dataset}
 
-We collected verified smart contracts from Etherscan~\footnote{\url{etherscan.io/contractsVerified}}
+We collected verified smart contracts from Etherscan\footnote{\url{etherscan.io/contractsVerified}} which is a block explorer and analytic platform for Ethereum. Etherscan verified contracts allows the public to audit and read contracts as it has to be made publicly available to be granted the verified status. Etherscan does not give access to a complete dataset of verified smart contracts but rather has an open source database of the latest 10,000-5,000 smart contracts that were verified. Therefore, we gathered the latest contracts from time to time, over a period of six months (2021-07-07 to 2022-01-06) to build our dataset.
 
-A database of verified smart contracts was collected from Etherscan which is a block explorer and analytics platform for Ethereum. Verifying a contract is a trivial task on etherscan but it allows the public to audit and read the contract as it has to be made publicly available to be granted the verified status. Etherscan does not give access to a complete dataset of verified smart contracts but rather has an open source database of the latest 10 000 smart contracts that were verified. This open source database was collected at different times during a period of 7 months to create the database that was used for the analysis starting at the 7th of July 2021 and ending January 6th of 2022. The first step we will do is remove all duplicate contracts and as a final pre-processing step which will only be possible after collecting the compiler version, all vyper contracts will be removed as the focus of this paper is on the Solidity language only. After this step we are left with a total of 28,209 contracts. The next step we do is removing all contracts that have 0 LOC as these contracts will not provide any value to our analysis. After removing those contracts we are left with a total of 26,800 available unique verified smart contracts.
-A more specific overview of the amount of contracts per month can be found in the chart \ref{fig:database}. This chart gives an overview of all the unique contracts that were collected per month.
+Then, we did following pre-processing steps in our dataset: (i) remove all duplicated contracts; (ii) remove contracts not written in Solidity; (iii) removed contracts with zero lines of code. After removing those contracts, we had a total of 26,800 unique verified solidity smart contracts. Figure~\ref{fig:dataset} shows the amount of contracts per month in our dataset. This dataset is publicly available.\footnote{\url{https://bit.ly/3fyOgBD}, the link has been properly anonymized for the reviewers to download the dataset spreadsheet with the name and address of the contracts and not break the double-blind review process. }
+
 \begin{figure}[h]
   \centering
   \includegraphics[width=\linewidth]{img/collected_contracts.PNG}
-  \caption{An overview of the amount of contracts collected each month. The collection started in July which is the reason for the initial 10,000 contracts. Interesting to mention is that starting mid-september, Etherscan has reduced the available verified smart contracts to download to only 5000. The small collection of January is due to only retrieving the database once at the start of the month.}
-  %%\description{Smart Contracts per month}
-  \label{fig:database}
+  \caption{Our dataset of verified smart contracts per month after the pre-processing steps. The label on top of each bar is rounded to closest thousand.}
+  \label{fig:dataset}
 \end{figure}
-\subsection{Method}
-Using the available API it is now possible to retrieve all source codes for each contract. To retrieve information from the Etherscan API an API key is needed which can be made on Etherscan, after that we can use following API endpoint  [\ref{lst:api}] for each contract address. 
 
-\begin{lstlisting}[language=Solidity, caption=Api call, label={lst:api}]
-https://api.etherscan.io/api
-   ?module=contract
+\subsection{Method}
+
+We use the Etherscan API~\cite{etherscan_api} to retrieve the source codes for each contract in our dataset. Listing~\ref{lst:api} shows an example of the API call used to acquire the contract source code. 
+\begin{lstlisting}[language=solidity, caption=Etherscan API call, label={lst:api}]
+https://api.etherscan.io/api?module=contract
    &action=getsourcecode
-   &address=0xaddress // The contract address
+   &address=0xAddress // The contract address
    &apikey=YourApiKeyToken // Your API key
 \end{lstlisting}
 
-Calling this will give a json response with following information from which
-we collect all source codes, contract names and the compiler version. For a more indepth explanation of how the API works we refer to the documentation made available on Etherscan \cite{etherscan_api}. 
-\begin{lstlisting}[language=json,firstnumber=1]
-{
-   "status":"1",
-   "message":"OK",
-   "result":[
-      {
-         "SourceCode": "Source code"
-         "ABI":"[The ABI Interface]"
-         "ContractName":"The Contract Name",
-         "CompilerVersion":"The Compiler Version",
-         "OptimizationUsed":"1",
-         "Runs":"200",
-         "ConstructorArguments":"Constructor arguments",
-         "EVMVersion":"Default",
-         "Library":"",
-         "LicenseType":"",
-         "Proxy":"0",
-         "Implementation":"",
-         "SwarmSource":""
-      }
-   ]
-}
-\end{lstlisting}
+Then, we analyzed each contract characteristics (lines of code, solidity version) and language constructs looking specifically for Ether exchange functions (call, send, and transfer) and guards (require, and assert). 
 
 \section{Analysis and Results}
 
-The aim of these experiments will be to have a preliminary analysis of the contracts and to detect potential reentrancy threats where the call function is present. We start with a total of 26,800 unique verified smart contracts. 
+First, we show some general characteristics on our dataset.
+Table~\ref{tab:loc} shows the general statistics considering the lines of code on the contract. We can see that the contracts in our dataset are small in lines of codes. That is expected, as smart contract code tends to be smaller when compared to software code in other domains. ** Which contract is the biggest? an example of the smallest contract **.
 
+\begin{table}
+\center
+  \caption{Lines of Code (LoC)}
+  \label{tab:loc}
+  \begin{tabular}{c c c c c}
+    \hline
+    Min & Median & Average & Std. Dev. & Max \\
+    \hline
+   1 & 547 & 739 & 678 & 9,452 \\
+  \hline
+\end{tabular}
+\end{table}
 
+Table~\ref{tab:major-versions} shows the contracts categorized by their major Solidity version. Most contracts are from the latest Solidity version, 0.8.x. The oldest Solidity version to appear in our dataset is 0.4.x which has the fewer amount of contracts.
 
-The first experiment is to take a look at the lines of code of these verified smart contracts and gather some statistics.
+\begin{table}
+\center
+  \caption{Solidity Major Versions}
+  \label{tab:major-versions}
+  \begin{tabular}{crr}
+    \hline
+    Solidity Version & \# Contracts & Percentage\\
+    \hline
+    0.8.x & 14,869 &55.48\%\\
+    0.6.x & 5,839 &21.79\%\\
+    0.5.x & 2,954 &11.02\%\\
+    0.7.x & 2,454 &09.16\%\\
+    0.4.x & 684 &02.55\%\\
+  \hline
+\end{tabular}
+\end{table}
 
-After an initial calculation we get the following values for the amount of lines of code, we notice their is a huge standard deviation in comparison with the median.
-\begin{itemize}
-    \item Average: 739
-    \item Median: 547
-    \item Standard deviation: 678
-    \item Min LOC: 1
-    \item Max LOC: 9452
-\end{itemize}
+Figure~\ref{fig:minor-versions} shows the top-10 solidity versions (major and minor) in our contracts. The versions with most contracts are 0.8.4 (18.7\%), 0.6.12 (17.1\%), and 0.8.7 (15.3\%). Together these three versions compose over 50\% of the contracts in our dataset.
 
-Another piece of data we will take a look at are the different versions of Solidity used in each contract. We plot the 30 most used versions in the following bar chart Figure \ref{fig:compiler} and also plot these versions by only looking at the major version \ref{fig:compiler_major}. We can notice that three versions are used in more than half of the database namely v0.6.12, v0.8.4 and v0.8.7. The specific amount of contracts for each version and the percentage of the database that have that contract version can be found in Table \ref{tab:versions}
 \begin{figure}[h]
   \centering
   \includegraphics[width=\linewidth]{img/versions_v3.png}
-  \caption{An overview of the top 10 solidity compiler versions used and the amount of contracts in the database that use that specific version. }
+  \caption{Top-10 Solidity versions in the database.}
   %\description{Solidity Compiler Version}
-  \label{fig:compiler}
+  \label{fig:minor-versions}
 \end{figure}
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=\linewidth]{img/major_versions.png}
-  \caption{An overview of the top solidity compiler versions used and the amount of contracts in the database that use that version, where we go into a higher level and only look at the major version. }
-  %\description{Solidity Compiler Version}
-  \label{fig:compiler_major}
-\end{figure}
 
-\begin{table}
-  \caption{Compiler Versions}
-  \label{tab:versions}
-  \begin{tabular}{ccl}
-    \hline
-    Solidity Version & \# Contracts & \% Percentage\\
-    \hline
-    0.8.4&5015&18.71\%\\
-    0.6.12&4587&17.12\%\\
-    0.8.7&4103&15.3\%\\
-    0.7.6&1564&5.84\%\\
-    0.5.17&1278&4.77\%\\
-    0.8.0&1166&4.35\%\\
-    0.8.6&1060&3.96\%\\
-    0.8.9&1008&3.76\%\\
-    0.5.0&857&3.20\%\\
-    0.8.10&768&2.87\%\\
-    Other&5394&20.13\%\\
-  \hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-  \caption{Compiler Versions (Major)}
-  \label{tab:versions}
-  \begin{tabular}{ccl}
-    \hline
-    Solidity Version & \# Contracts & \% Percentage\\
-    \hline
-    0.8&14869&55.48\%\\
-    0.6&5839&21.79\%\\
-    0.5&2954&11.02\%\\
-    0.7&2454&9.16\%\\
-    0.4&684&2.55\%\\
-  \hline
-\end{tabular}
-\end{table}
 We will now dive deeper into the source contracts themselves and have a look at the different functionality, more specifically we will count the amount of times we find a call, send, and transfer function which as mentioned earlier are the main methods to exchange Ether in a Solidity smart contract. We will also calculate the amount of times a require, assert and throw function has been called in order to see how many of this contracts make use of guards. Table \ref{tab:stats} shows us the different statistics for the collected database. We notice that almost all contracts have some form of a guard pattern with a require function. Only 270 contracts actually have a call.value function which shows us that they may have a potential reentrancy attack. 
 
 \begin{table}
