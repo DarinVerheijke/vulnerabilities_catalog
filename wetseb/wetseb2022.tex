@@ -270,7 +270,7 @@ Figure~\ref{fig:dataset} shows the amount of contracts per month in our dataset.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{img/collected_contracts.PNG}
+  \includegraphics[width=\linewidth]{wetseb/img/collected_contractsv2.png}
   \caption{Our dataset of verified smart contracts per month after the pre-processing steps. The label on top of each bar is rounded to closest thousand.}
   \label{fig:dataset}
 \end{figure}
@@ -302,7 +302,7 @@ Table~\ref{tab:loc} shows the general statistics considering the lines of code o
     \hline
     Min & Median & Average & Std. Dev. & Max \\
     \hline
-   1 & 547 & 739 & 678 & 9,452 \\
+   2 & 256 & 359 & 335 & 6,461 \\
   \hline
 \end{tabular}
 \end{table}
@@ -318,7 +318,7 @@ Table~\ref{tab:major-versions} shows the contracts categorized by their major So
     Solidity Version & \# Contracts & Percentage\\
     \hline
     0.8.x & 14,869 &55.48\%\\
-    0.6.x & 5,839 &21.79\%\\
+    0.6.x & 5,838 &21.78\%\\
     0.5.x & 2,954 &11.02\%\\
     0.7.x & 2,454 &09.16\%\\
     0.4.x & 684 &02.55\%\\
@@ -330,7 +330,7 @@ Figure~\ref{fig:minor-versions} shows the top-10 solidity versions (major and mi
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{img/versions_v3.png}
+  \includegraphics[width=\linewidth]{wetseb/img/versions_clean.png}
   \caption{Top-10 Solidity versions in the database.}
   %\description{Solidity Compiler Version}
   \label{fig:minor-versions}
@@ -346,10 +346,10 @@ We will now dive deeper into the source contracts themselves and have a look at 
     \hline
     Function & \# Contracts & \# Functions\\
     \hline
-    Call&270&384\\
-    Send&9176&17,814\\
+    Call&13,443&32,236\\
+    Send&9,176&17,814\\
     Transfer&647&1059\\
-    Require&26,191&622,701\\
+    Require&26,190&622,679\\
     Assert&7279&10,507\\
     Throws&4174&10,590\\
     \hline
@@ -361,18 +361,18 @@ We will now dive deeper into the source contracts themselves and have a look at 
 The next experiment will focus more on those contracts that contain a call.value function, all previous statistics will be recalculated for only the smart contracts containing a call.value function to see if there are any similarities but first we will take a look at which version is used most in these contracts.
 Figure \ref{fig:call_version}. The most used version is v0.5.17 which was the 5th most used version in all our contracts. A more interesting finding is that there are only 4 contracts above v0.6 that contain a call function of which 3 are from the compiler version that was most used by the complete database namely v0.8.4. For the line of code statistics we get the following values:
 \begin{itemize}
-    \item Average: 1050
-    \item Median: 761
-    \item Standard deviation: 1079
-    \item Min: 31
-    \item Max: 6535
+    \item Average: 511
+    \item Median: 530
+    \item Standard deviation: 367
+    \item Min: 6
+    \item Max: 5572
 \end{itemize}
 We notice that these smart contracts on average are of a relatively bigger size in comparison with a regular contract.
 Table \ref{tab:call} will now show us different statistics for this specific selection of contracts that only contain a call.value function. In this sub selection of contracts a call function is called about 1.4 times on average in a contract and a total of 384 call functions were called in 270 contracts with the highest amount of calls in a single contract being 14. An interesting thing to note is that the average amount of guards is higher for these contracts, this shows us that a guard pattern has been potentially used in cases where a call.value function has been used and are signs that most of these contracts are probably correctly implemented. 
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{img/versions_call_v3_total.png}
+  \includegraphics[width=\linewidth]{wetseb/img/call_clean_v2.png}
   \caption{An overview of all the specific compiler versions used in contracts that contain a call.value function. }
   %\description{Solidity Compiler Version}
   \label{fig:call_version}
@@ -385,19 +385,19 @@ Table \ref{tab:call} will now show us different statistics for this specific sel
     \hline
     Function & \# Contracts & \# Functions\\
     \hline
-    Send&153&495\\
-    Transfer&18&51\\
-    Require&270&11932\\
-    Assert&192&333\\
-    Throws&163&324\\
+    Send&4514&8789\\
+    Transfer&582&920\\
+    Require&13,392&456,461\\
+    Assert&5348&6701\\
+    Throws&3602&8377\\
     \hline
     Function & Avg/contract\\
     \hline
-    Send&1.83\\
-    Transfer&0.19\\
-    Require&44.19\\
-    Assert&1.23\\
-    Throws&1.2\\
+    Send&0.65\\
+    Transfer&0.07\\
+    Require&33.96\\
+    Assert&0.50\\
+    Throws&0.62\\
   \hline
 \end{tabular}
 \end{table}
@@ -406,7 +406,7 @@ We will do a similar analysis on both the send and transfer function. Looking at
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{img/sends_versions.png}
+  \includegraphics[width=\linewidth]{wetseb/img/send_versions_clean.png}
   \caption{An overview of all the specific compiler versions used in contracts that contain a send function. }
   %\description{Solidity Compiler Version (Sends)}
   \label{fig:send_version}
@@ -414,7 +414,7 @@ We will do a similar analysis on both the send and transfer function. Looking at
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{img/transfers_versions.png}
+  \includegraphics[width=\linewidth]{wetseb/img/transfer_versions_clean.png}
   \caption{An overview of all the specific compiler versions used in contracts that contain a transfer function. }
   %\description{Solidity Compiler Version (Transfers)}
   \label{fig:transfer_version}
@@ -428,11 +428,11 @@ If we calculate the LOC statistics for both contracts containing send functions 
     \hline
     Statistic & Send & Transfer\\
     \hline
-    Average&832&1453\\
-    Mean&553&1378\\
-    Std Dev&741.78&841.18\\
-    Min&10&20\\
-    Max&9452&9452\\
+    Average&452&635\\
+    Mean&345&575\\
+    Std Dev&373&498\\
+    Min&6&15\\
+    Max&6461&6461\\
   \hline
 \end{tabular}
 \end{table}
@@ -447,7 +447,7 @@ We will now look at the different functions present in both cases in a similar w
     \hline
     Function & \# Contracts & \# Functions\\
     \hline
-    Call&153&226\\
+    Call&4514&11083\\
     Transfer&107&251\\
     Require&9060&256835\\
     Assert&2722&4789\\
@@ -455,11 +455,11 @@ We will now look at the different functions present in both cases in a similar w
     \hline
     Function & Avg/contract\\
     \hline
-    Call&0.0246\\
-    Transfer&0.0274\\
-    Require&27.9898\\
-    Assert&0.5219\\
-    Throws&0.4727\\
+    Call&1.20\\
+    Transfer&0.03\\
+    Require&27.99\\
+    Assert&0.52\\
+    Throws&0.47\\
   \hline
 \end{tabular}
 \end{table}
@@ -471,7 +471,7 @@ We will now look at the different functions present in both cases in a similar w
     \hline
     Function & \# Contracts & \# Functions\\
     \hline
-    Call&18&20\\
+    Call&582&1203\\
     Send&107&234\\
     Require&647&25058\\
     Assert&63&166\\
@@ -479,11 +479,11 @@ We will now look at the different functions present in both cases in a similar w
     \hline
     Function & Avg/contract\\
     \hline
-    Call&0.0309\\
-    Send&0.3616\\
-    Require&38.7295\\
-    Assert&0.2566\\
-    Throws&0.3462\\
+    Call&1.86\\
+    Send&0.36\\
+    Require&38.73\\
+    Assert&0.26\\
+    Throws&0.35\\
   \hline
 \end{tabular}
 \end{table}
