@@ -40,13 +40,15 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{courier}
-\usepackage{url}
+\usepackage{xurl}
 \usepackage{hyperref}
 \usepackage{relsize,xspace}
 \usepackage{fancyhdr}%construct and control page headers and footers
 
 \usepackage{listings}
 \usepackage{xcolor}
+
+\newcommand{\totalContracts}{26,799\xspace}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -158,7 +160,7 @@ One of these dangers when calling an external contract is called reentrancy and 
 
 Solidity is one of the major programming languages for smart contracts on Ethereum. To avoid these exploits there have been introduced some best practices. More specifically the function call() was to be replaced by the more safe functions transfer() and send().  However, recently there has been a switch back to the call() function with the introduction of EIP 1884 \cite{eip1884}.  Other precautions instead must be taken to prevent reentrancy attacks, one recommendation is making use of safe code patterns and using guard constructs. 
 
-In this paper, we will investigate how these calling functions are used in practice and if they are still commonly used for the current smart contracts being deployed in the Ethereum network.  We collected a dataset of 26,800 unique open-source verified smart contracts from Etherscan (from 2012-07-07 to 2022-01-06). 
+In this paper, we will investigate how these calling functions are used in practice and if they are still commonly used for the current smart contracts being deployed in the Ethereum network.  We collected a dataset of \totalContracts unique open-source verified smart contracts from Etherscan (from 2012-07-07 to 2022-01-06). 
 
 
 
@@ -264,16 +266,8 @@ Here the attacker will call the transfer function when the code is executed on a
 
 We collected verified smart contracts from Etherscan\footnote{\url{etherscan.io/contractsVerified}} which is a block explorer and analytic platform for Ethereum. Etherscan verified contracts allows the public to audit and read contracts as it has to be made publicly available to be granted the verified status. Etherscan does not give access to a complete dataset of verified smart contracts but rather has an open source database of the latest 10,000-5,000 smart contracts that were verified. Therefore, we gathered the latest contracts from time to time, over a period of six months (2021-07-07 to 2022-01-06) to build our dataset.
 
-Then, we did the following pre-processing steps in our dataset: (i) remove all duplicated\footnote{We removed contracts with the same address in the Ethereum blockchain. We did not verified whether the contracts with the same name have the same source code. Since these contracts have different addresses, they are considered separate entities in the blockchain platform.} contracts; (ii) remove contracts not written in Solidity; (iii) removed contracts with zero lines of code. After removing those contracts, we had a total of 26,800 unique verified solidity smart contracts. This dataset is publicly available.\footnote{\url{https://bit.ly/3fyOgBD}, the link has been properly anonymized for the reviewers to download the dataset spreadsheet with the name and address of the contracts and not break the double-blind review process.} 
+Then, we did the following pre-processing steps in our dataset: (i) remove all duplicated\footnote{We removed contracts with the same address in the Ethereum blockchain. We did not verified whether the contracts with the same name have the same source code. Since these contracts have different addresses, they are considered separate entities in the blockchain platform.} contracts; (ii) remove contracts not written in Solidity; (iii) removed contracts which we could not process using cloc.\footnote{cloc is a tool to count lines of code available at <\url{https://github.com/AlDanial/cloc}>.} After removing those contracts, we had a total of \totalContracts unique verified solidity smart contracts. This dataset is publicly available.\footnote{\url{https://bit.ly/3fyOgBD}, the link has been properly anonymized for the reviewers to download the dataset spreadsheet with the name and address of the contracts and not break the double-blind review process.} 
 
-Figure~\ref{fig:dataset} shows the amount of contracts per month in our dataset. The month refers to the date the contract was verified in Etherscan, and not the date it was deployed in the Ethereum network. 
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=\linewidth]{img/collected_contractsv2.png}
-  \caption{Our dataset of verified smart contracts per month after the pre-processing steps. The label on top of each bar is rounded to closest thousand.}
-  \label{fig:dataset}
-\end{figure}
 
 \subsection{Method}
 
@@ -281,18 +275,16 @@ We use the Etherscan API~\cite{etherscan_api} to retrieve the source codes for e
 \begin{lstlisting}[language=solidity, caption=Etherscan API call, label={lst:api}]
 https://api.etherscan.io/api?module=contract
    &action=getsourcecode
-   &address=0xAddress // The contract address
+   &address=0xb4e32b964f6ae78 //The contract address
    &apikey=YourApiKeyToken // Your API key
 \end{lstlisting}
 
-Then, we analyzed each contract characteristics (lines of code, solidity version) and language constructs looking specifically for Ether exchange functions (call, send, and transfer) and guards (require, and assert). 
+Then, we used the cloc tool on the contracts to discover how many lines of code are in each one.  We removed from this study the contracts that cloc were not able to process. Moreover, we used a Python script on the contracts to locate specific methods used in the contracts related to Ether exchange functions (call, send, and transfer) and guards (require, assert, revert).
 
 \section{Analysis and Results}
 
-\subsection{General Code Characteristics}
-
 First, we show some general characteristics on our dataset.
-Table~\ref{tab:loc} shows the general statistics considering the lines of code on the contract. We can see that the contracts in our dataset are small in lines of codes. That is expected, as smart contract code tends to be smaller when compared to software code in other domains. ** Which contract is the biggest? an example of the smallest contract **.
+Table~\ref{tab:loc} shows the general statistics considering the lines of code on the contract. We can see that the contracts in our dataset are small in lines of codes, with an average of 256 LoC and a median of 356 LoC. That is expected, as smart contract code tends to be smaller when compared to software code in other domains.  The smallest contracts have only 2 LoC.  For example, the contract \textit{BlackHole}\footnote{\url{https://etherscan.io/address/0x727E9A3067DeEaF031916fA0fC53B02cf44F8731\#code}} only has two lines, a pragma definition for the solidity version, and an empty contract definition. The biggest contract is \textit{RewardControl}\footnote{\url{https://etherscan.io/address/0xcf8Fe5bB819359Ea02DF65E50B6194D12b69aB88\#code}} with 6,461 LoC. 
 
 \begin{table}
 \center
@@ -306,6 +298,7 @@ Table~\ref{tab:loc} shows the general statistics considering the lines of code o
   \hline
 \end{tabular}
 \end{table}
+
 
 Table~\ref{tab:major-versions} shows the contracts categorized by their major Solidity version. Most contracts are from the latest Solidity version, 0.8.x. The oldest Solidity version to appear in our dataset is 0.4.x which has the fewer amount of contracts.
 
@@ -336,27 +329,29 @@ Figure~\ref{fig:minor-versions} shows the top-10 solidity versions (major and mi
   \label{fig:minor-versions}
 \end{figure}
 
-
-We will now dive deeper into the source contracts themselves and have a look at the different functionality, more specifically we will count the amount of times we find a call, send, and transfer function which as mentioned earlier are the main methods to exchange Ether in a Solidity smart contract. We will also calculate the amount of times a require, assert and throw function has been called in order to see how many of this contracts make use of guards. Table \ref{tab:stats} shows us the different statistics for the collected database. We notice that almost all contracts have some form of a guard pattern with a require function. Only 270 contracts actually have a call.value function which shows us that they may have a potential reentrancy attack. 
+Now, we investigate how many Ether exchange methods and guards are being used in the contracts. Table~\ref{tab:results-all} shows how many contracts in our dataset has at least one of the methods, the overall count of the method, and the average number in the contracts that have at least one.  Even though, call is the unsafest method for Ether exchange,  it is used by 50\% of the contracts in the dataset.  On average, there are 2.3 call uses on the contracts.  Any contract using call have the potential to have a reentrancy vulnerability.  On the other hand, transfer is supposed the be the safest method and it is the least used (2\%). Send is also a safe-by-design function, and it is used by roughly one-third of the contracts. 
 
 \begin{table}
-  \caption{Statistics}
-  \label{tab:stats}
-  \begin{tabular}{ccl}
+\center
+  \caption{Ether Exchange and Guards Usage}
+  \label{tab:results-all}
+  \begin{tabular}{crrr}
     \hline
-    Function & \# Contracts & \# Functions\\
+    Method & Contracts & Count & Average \\
     \hline
-    Call&13,443&32,236\\
-    Send&9,176&17,814\\
-    Transfer&647&1059\\
-    Require&26,190&622,679\\
-    Assert&7279&10,507\\
-    Throws&4174&10,590\\
+    Call & 13,443 (50\%) & 32,236 & 2.3 \\
+    Send & 9,176 (34\%) & 17,814 & 1.9 \\
+    Transfer & 647 (02\%) & 1,059& 1.6 \\
+    Require & 26,190 (97\%) & 622,679 & 23.7 \\
+    Assert & 7,279 (27\%) & 10,507 & 1.4 \\
+    Revert & 13,819 (51\%) & 41,502 & 3.0\\
     \hline
 \end{tabular}
 \end{table}
 
-\subsection{Ether Exchange Functions}
+On the guard methods shown in Table~\ref{tab:results-all}, require used by the great majority of all contracts (97\%).  On average, there are 23.7 uses of require in the contracts. The great usage of this guard may be to counteract the vulnerabilities of call.  Revert is also commonly used by more then half of the contracts in our dataset.  Finaly,  Assert is the least used guard in our analysis.
+
+\subsection{Call}
 
 The next experiment will focus more on those contracts that contain a call.value function, all previous statistics will be recalculated for only the smart contracts containing a call.value function to see if there are any similarities but first we will take a look at which version is used most in these contracts.
 Figure \ref{fig:call_version}. The most used version is v0.5.17 which was the 5th most used version in all our contracts. A more interesting finding is that there are only 4 contracts above v0.6 that contain a call function of which 3 are from the compiler version that was most used by the complete database namely v0.8.4. For the line of code statistics we get the following values:
@@ -515,6 +510,10 @@ Wang et al. \cite{contractward} evaluate a set of real-world smart contracts wit
 A deep-learning based approach is used by Qian et al. \cite{automated}. The aim is to precisely detect reentrancy bugs using a bidirectional long-short term memory with attention mechanism. They also propose using a contract snippet as another way to represent a smart contract only capturing key semantic sentences which contain related and critical information such as control flow and data dependencies. These are then used as input to the sequential models. They show that this deep-learning approach outperforms other state-of-the-art smart contract vulnerability tools.
 
 Slither by Feist et al. \cite{slither} is a static analysis framework that converts Solidity smart contracts into an intermediate representation which they call SlithIR. Static Single Assignment forms are used aswell as a reduced instruction set for ease of implementation. Their framework has use cases in automated detection of vulnerabilities, detection of code optimization opportunities, improvement of clarity and ease of understanding of the contracts. An evaluation of the proposed frameworks capabilities is done using a set of real-world smart contracts. 
+
+\section{Conclusion}
+
+
 
 %%
 %% The next two lines define the bibliography style to be used, and
