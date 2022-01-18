@@ -283,6 +283,8 @@ Then, we used the cloc tool on the contracts to discover how many lines of code 
 
 \section{Analysis and Results}
 
+\subsection{Overall Analysis}
+
 First, we show some general characteristics on our dataset.
 Table~\ref{tab:loc} shows the general statistics considering the lines of code on the contract. We can see that the contracts in our dataset are small in lines of codes, with an average of 256 LoC and a median of 356 LoC. That is expected, as smart contract code tends to be smaller when compared to software code in other domains.  The smallest contracts have only 2 LoC.  For example, the contract \textit{BlackHole}\footnote{\url{https://etherscan.io/address/0x727E9A3067DeEaF031916fA0fC53B02cf44F8731\#code}} only has two lines, a pragma definition for the solidity version, and an empty contract definition. The biggest contract is \textit{RewardControl}\footnote{\url{https://etherscan.io/address/0xcf8Fe5bB819359Ea02DF65E50B6194D12b69aB88\#code}} with 6,461 LoC. 
 
@@ -349,21 +351,26 @@ Now, we investigate how many Ether exchange methods and guards are being used in
 \end{tabular}
 \end{table}
 
-On the guard methods shown in Table~\ref{tab:results-all}, require used by the great majority of all contracts (97\%).  On average, there are 23.7 uses of require in the contracts. The great usage of this guard may be to counteract the vulnerabilities of call.  Revert is also commonly used by more then half of the contracts in our dataset.  Finaly,  Assert is the least used guard in our analysis.
+On the guard methods shown in Table~\ref{tab:results-all}, require is used by the great majority of all contracts (97\%).  On average, there are 23.7 uses of require in the contracts. The great usage of this guard may be to counteract the vulnerabilities of call.  Revert is also commonly used by more then half of the contracts in our dataset.  Finaly,  Assert is the least used guard in our analysis.
 
-\subsection{Call}
+\subsection{Contracts using Call}
 
-The next experiment will focus more on those contracts that contain a call.value function, all previous statistics will be recalculated for only the smart contracts containing a call.value function to see if there are any similarities but first we will take a look at which version is used most in these contracts.
-Figure \ref{fig:call_version}. The most used version is v0.5.17 which was the 5th most used version in all our contracts. A more interesting finding is that there are only 4 contracts above v0.6 that contain a call function of which 3 are from the compiler version that was most used by the complete database namely v0.8.4. For the line of code statistics we get the following values:
-\begin{itemize}
-    \item Average: 511
-    \item Median: 530
-    \item Standard deviation: 367
-    \item Min: 6
-    \item Max: 5572
-\end{itemize}
-We notice that these smart contracts on average are of a relatively bigger size in comparison with a regular contract.
-Table \ref{tab:call} will now show us different statistics for this specific selection of contracts that only contain a call.value function. In this sub selection of contracts a call function is called about 1.4 times on average in a contract and a total of 384 call functions were called in 270 contracts with the highest amount of calls in a single contract being 14. An interesting thing to note is that the average amount of guards is higher for these contracts, this shows us that a guard pattern has been potentially used in cases where a call.value function has been used and are signs that most of these contracts are probably correctly implemented. 
+We focus only on the contracts that contain a call function. Since call is a very unsafe function, there is the possiblitiy for the contracts using it to suffer from a reentrancy vulnerability.  For this reason, such contracts may have different characteristics.  Table~\ref{tab:call-loc} shows the lines of code considering only the contracts that contain a call function. The average and median LoC values are higher than the ones for all contracts. Therefore, the contract with call in our dataset usually have more lines of code.  The call contract with the least lines of code is called \textit{FlashBotLowGas}.\footnote{\url{https://etherscan.io/address/0x90ab9a926a1593992547e0f9a0df6401f10421cd\#code}}
+
+\begin{table}[b]
+\center
+  \caption{Contracts using Call - Lines of Code}
+  \label{tab:call-loc}
+  \begin{tabular}{c c c c c}
+    \hline
+    Min & Median & Average & Std. Dev. & Max \\
+    \hline
+   6 & 530 & 511 & 367 & 5,572 \\
+  \hline
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:call_version} shows the Solidity versions for contracts with call. The version with most contracts using call is 0.6.12.  The top-3 versions for all contracts are also the top-3 for contracts with call but in different positions. 
 
 \begin{figure}[h]
   \centering
@@ -373,29 +380,27 @@ Table \ref{tab:call} will now show us different statistics for this specific sel
   \label{fig:call_version}
 \end{figure}
 
+Table~\ref{tab:call} show the Ether exchange and guard methods considering only the 13,443 contracts that contains at least one call method.  We can see that approximately one-third of the contracts using call also use the send function.  We also like to highlight that there is a greater number of contracts with call using guards. For isntance,  99\% of the call contracts used Require compared to 97\% of all contracts; 39\% of the call contracts used Assert compared to 27\%  of all contracts; and 89\% of the call contracts used Revert compared to 51\% of all contracts. The higher usage of guards is probably to counter the vulnerabilities of call. This may be an indication that Solidity developers are concerned about the security of their contracts specially when using unsafe methods such as call. 
+
 \begin{table}
-  \caption{Statistics of Contracts containing call function}
+\center
+  \caption{Solidity Methods of Contracts using Call}
   \label{tab:call}
-  \begin{tabular}{ccl}
+  \begin{tabular}{crrr}
     \hline
-    Function & \# Contracts & \# Functions\\
+    Method & Contracts & Count & Average\\
     \hline
-    Send&4514&8789\\
-    Transfer&582&920\\
-    Require&13,392&456,461\\
-    Assert&5348&6701\\
-    Throws&3602&8377\\
-    \hline
-    Function & Avg/contract\\
-    \hline
-    Send&0.65\\
-    Transfer&0.07\\
-    Require&33.96\\
-    Assert&0.50\\
-    Throws&0.62\\
-  \hline
+    Send & 4,514 (33\%) & 8,789 & 0.65\\
+    Transfer &582 (04\%) & 920 & 0.07\\
+    Require &13,392 (99\%) & 456,461 & 33.96 \\
+    Assert & 5,348 (39\%) & 6,701 & 0.49\\
+    Revert & 11,976 (89\%) & 38,273 & 2.84\\
 \end{tabular}
 \end{table}
+
+\subsection{Contracts using Send}
+
+Now, we focus only on the contracts that contain a send function. Send is much safer alternative than call for Ether exchange. Therefore,  we expect the contracts using send to have different characteristics than the ones using call. 
 
 We will do a similar analysis on both the send and transfer function. Looking at the versions in Figure \ref{fig:send_version} we can see that for the send function the top 5 versions are completely similar to the top 5 versions of the whole contract database. This is partly due to the fact that 66\% of the contracts of our whole database have a send function. If we look at the versions of transfer in Figure \ref{fig:transfer_version} we notice that both v0.8.4 and 0.6.12 are not even in the top 10 versions which is interesting. A version that also showed up in the top 10 of call versions namely v0.4.24 shows up here. This signifies that both call and transfer functions were used more often in v0.4 and that since then there was a shift to the send function. 
 
