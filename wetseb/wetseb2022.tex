@@ -448,6 +448,25 @@ Table~\ref{tab:send} show the Ether exchange and guard methods considering only 
 
 \subsection{Contracts with Transfer}
 
+We analyze only the contracts using at least one transfer method. In our dataset, transfer is the least used method, being present in only 647 (approximately 2\%) of the contracts.  Even though there are fewer contracts to analyze, we expect to obverse different characteristics. 
+
+Table~\ref{tab:transfer-loc} shows lines of code for contracts with transfer.  The median, average, standard deviation are the highest when compared to all contracts, contracts using call, and contracts using send.  This is unexpected, as transfer is the safest method for Ether exchange which already throws an exception on error.
+
+\begin{table}[t]
+\center
+  \caption{Contracts using Transfer - Lines of Code}
+  \label{tab:transfer-loc}
+  \begin{tabular}{c c c c c}
+    \hline
+    Min & Median & Average & Std. Dev. & Max \\
+    \hline
+   15 & 575 & 635 & 498 & 6,461 \\
+  \hline
+\end{tabular}
+\end{table}
+
+
+
 \begin{figure}[h]
   \centering
   \includegraphics[width=\linewidth]{img/transfer_versions_clean.png}
@@ -456,25 +475,6 @@ Table~\ref{tab:send} show the Ether exchange and guard methods considering only 
   \label{fig:transfer_version}
 \end{figure}
 
-If we calculate the LOC statistics for both contracts containing send functions and contracts containing transfer functions we get the statistics in Table \ref{tab:loc}. Contracts containing a transfer function seem to be a lot longer on average (almost twice as long) in comparison with the average length of a smart contract. A contract containing a send function is pretty similar in length in comparison with the average smart contract.
-\begin{table}
-  \caption{LOC Statistics for send and transfer}
-  \label{tab:loc}
-  \begin{tabular}{ccl}
-    \hline
-    Statistic & Send & Transfer\\
-    \hline
-    Average&452&635\\
-    Mean&345&575\\
-    Std Dev&373&498\\
-    Min&6&15\\
-    Max&6461&6461\\
-  \hline
-\end{tabular}
-\end{table}
-
-Of all contracts containing a send functions there are almost on average two send functions per contract with the highest amount of send functions used in any contract being 68. This is by far the most used way of transferring Ether in the database that we collected. The transfer function is present in a lot less contracts but when it is used, the average of times it is in a contract is around 1.63 times with the highest amount being 12. 
-We will now look at the different functions present in both cases in a similar way we did for the call function for which the results can be found in Table \ref{tab:send} and Table \ref{tab:transfer}. For the contracts containing a send function we notice that they almost always include atleast one require guard as well. The average of require guards used in a contract containing a transfer function is however higher in comparison with the average of contracts that contain a send function. We can also see that the average of both assert guards and throws are higher for contracts containing a send function than the transfer function. If we now compare some of these statistics to the numbers of the contracts containing a call function we immediately see that those contracts have a lot more guards. These due to the fact that both transfer and send are considered safer functions and thus a call function by design will need to utilize more guards for it to not be exploited.
 
 \begin{table}
   \caption{Statistics of Contracts containing transfer function}
