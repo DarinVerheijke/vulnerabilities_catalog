@@ -331,7 +331,7 @@ Figure~\ref{fig:minor-versions} shows the top-10 solidity versions (major and mi
   \label{fig:minor-versions}
 \end{figure}
 
-Now, we investigate how many Ether exchange methods and guards are being used in the contracts. Table~\ref{tab:results-all} shows how many contracts in our dataset has at least one of the methods, the overall count of the method, and the average number in the contracts that have at least one.  Even though, call is the unsafest method for Ether exchange,  it is used by 50\% of the contracts in the dataset.  On average, there are 2.3 call uses on the contracts.  Any contract using call have the potential to have a reentrancy vulnerability.  On the other hand, transfer is supposed the be the safest method and it is the least used (2\%). Send is also a safe-by-design function, and it is used by roughly one-third of the contracts. 
+Now, we investigate how many Ether exchange methods and guards are being used in the contracts. Table~\ref{tab:results-all} shows how many contracts in our dataset has at least one of the methods, the overall count of the method, and the average number in the contracts that have at least one.  Even though, call is the unsafest method for Ether exchange,  it is used by 50\% of the contracts in the dataset.  On average, there are 2.3 call uses on the contracts.  Any contract using call have the potential to have a reentrancy vulnerability.  On the other hand, send which is a safer method and it is the least used (2\%). Trasnfer is the safest method, and it is used by roughly one-third of the contracts. 
 
 \begin{table}
 \center
@@ -342,8 +342,8 @@ Now, we investigate how many Ether exchange methods and guards are being used in
     Method & Contracts & Count & Average \\
     \hline
     Call & 13,443 (50\%) & 32,236 & 2.3 \\
-    Send & 9,176 (34\%) & 17,814 & 1.9 \\
-    Transfer & 647 (02\%) & 1,059& 1.6 \\
+    Transfer & 9,176 (34\%) & 17,814 & 1.9 \\
+    Send & 647 (02\%) & 1,059& 1.6 \\
     Require & 26,190 (97\%) & 622,679 & 23.7 \\
     Assert & 7,279 (27\%) & 10,507 & 1.4 \\
     Revert & 13,819 (51\%) & 41,502 & 3.0\\
@@ -390,24 +390,24 @@ Table~\ref{tab:call} show the Ether exchange and guard methods considering only 
     \hline
     Method & Contracts & Count & Average\\
     \hline
-    Send & 4,514 (33\%) & 8,789 & 0.65\\
-    Transfer &582 (04\%) & 920 & 0.07\\
+    Transfer & 4,514 (33\%) & 8,789 & 0.65\\
+    Send &582 (04\%) & 920 & 0.07\\
     Require &13,392 (99\%) & 456,461 & 33.96 \\
     Assert & 5,348 (39\%) & 6,701 & 0.49\\
     Revert & 11,976 (89\%) & 38,273 & 2.84\\
 \end{tabular}
 \end{table}
 
-\subsection{Contracts using Send}
+\subsection{Contracts using Transfer}
 
-Now, we focus only on the contracts that contain a send function. Send is much safer alternative than call for Ether exchange. Therefore,  we expect the contracts using send to have different characteristics than the ones using call.  
+Now, we focus only on the contracts that contain a transfer function.  Transfer is much safer alternative than call for Ether exchange. Therefore,  we expect the contracts using transfer to have different characteristics than the ones using call.  
 
-Table~\ref{tab:send-loc} shows the lines of code only from contracts with a send function.  The median, average,  and standard deviation are higher than the ones when considering all contracts.  However,  the same statistics are lower when compared to the contracts with call.  This means that contracts using send tend to have lower LoC than the contracts using call. The reason for this difference could be that call will need extra code to protect against vulnerabilities. Since send is a safe-by-design function,  it will not need as much extra code as call for a more secure contract.  The smallest LoC contract using send is ***
+Table~\ref{tab:transfer-loc} shows the lines of code only from contracts with a transfer function.  The median, average,  and standard deviation are higher than the ones when considering all contracts.  However,  the same statistics are lower when compared to the contracts with call.  This means that contracts using transfer tend to have lower LoC than the contracts using call. The reason for this difference could be that call will need extra code to protect against vulnerabilities. Since transfer is a safe-by-design function,  it will not need as much extra code as call for a more secure contract.  The smallest LoC contract using transfer is ***
 
 \begin{table}[t]
 \center
-  \caption{Contracts using Send - Lines of Code}
-  \label{tab:send-loc}
+  \caption{Contracts using Transfer - Lines of Code}
+  \label{tab:transfer-loc}
   \begin{tabular}{c c c c c}
     \hline
     Min & Median & Average & Std. Dev. & Max \\
@@ -417,28 +417,28 @@ Table~\ref{tab:send-loc} shows the lines of code only from contracts with a send
 \end{tabular}
 \end{table}
 
-Figure~\ref{fig:send_version} shows the solidity versions for contracts that contain send.  The top-5 versions for contracts using send are the same top-5 versions for all contracts in our dataset.  This could indicate that the contracts with send may represent a general set similar to all contracts in our dataset.
+Figure~\ref{fig:transfer_version} shows the solidity versions for contracts that contain transfer.  The top-5 versions for contracts using send are the same top-5 versions for all contracts in our dataset.  This could indicate that the contracts with send may represent a general set similar to all contracts in our dataset.
 
 \begin{figure}[h]
   \centering
   \includegraphics[width=\linewidth]{img/send_versions_clean.png}
-  \caption{Top-10 Solidity versions on Contracts using Send.}
+  \caption{Top-10 Solidity versions on Contracts using Transfer.}
   %\description{Solidity Compiler Version (Sends)}
-  \label{fig:send_version}
+  \label{fig:transfer_version}
 \end{figure}
 
-Table~\ref{tab:send} show the Ether exchange and guard methods considering only the 9,176 contracts that contains at least one send function.  The percentage of contracts when looking at only contract with send is similar (with a 1-2\% difference) from the ones considering all contracts.  This is different from the contracts with call where the guards percentage increases by a noticeable amount for Assert and Revert. 
+Table~\ref{tab:transfer} show the Ether exchange and guard methods considering only the 9,176 contracts that contains at least one transfer function.  The percentage of contracts when looking at only contract with transfer is similar (with a 1-2\% difference) from the ones considering all contracts.  This is different from the contracts with call where the guards percentage increases by a noticeable amount for Assert and Revert. 
 
 \begin{table}
 \center
-  \caption{Solidity Methods of Contracts using Send}
-  \label{tab:send}
+  \caption{Solidity Methods of Contracts using Transfer}
+  \label{tab:transfer}
   \begin{tabular}{crrr}
     \hline
     Methods & Contracts & Count & Average \\
     \hline
     Call & 4,514 (49\%) & 11,083 & 1.20\\
-    Transfer &107 (01\%) & 251 & 0.03\\
+    Send &107 (01\%) & 251 & 0.03\\
     Require & 9,060 (98\%) &256,835 & 27.99\\
     Assert & 2,722 (29\%) & 4,789 & 0.52\\
     Revert & 4,876 (53\%) & 14,493 & 1.57 \\
@@ -446,16 +446,16 @@ Table~\ref{tab:send} show the Ether exchange and guard methods considering only 
 \end{tabular}
 \end{table}
 
-\subsection{Contracts with Transfer}
+\subsection{Contracts with Send}
 
-We analyze only the contracts using at least one transfer method. In our dataset, transfer is the least used method, being present in only 647 (approximately 2\%) of the contracts.  Even though there are fewer contracts to analyze, we expect to obverse different characteristics. 
+We analyze only the contracts using at least one send method. In our dataset, send is the least used method, being present in only 647 (approximately 2\%) of the contracts.  Even though there are fewer contracts to analyze, we expect to obverse different characteristics. 
 
-Table~\ref{tab:transfer-loc} shows lines of code for contracts with transfer.  The median, average, standard deviation are the highest when compared to all contracts, contracts using call, and contracts using send.  This is unexpected, as transfer is the safest method for Ether exchange which already throws an exception on error.
+Table~\ref{tab:send-loc} shows lines of code for contracts with send.  The median, average, standard deviation are the highest when compared to all contracts, contracts using call, and contracts using transfer.  %This is unexpected, as transfer is the safest method for Ether exchange which already throws an exception on error.
 
 \begin{table}[t]
 \center
-  \caption{Contracts using Transfer - Lines of Code}
-  \label{tab:transfer-loc}
+  \caption{Contracts using Send - Lines of Code}
+  \label{tab:send-loc}
   \begin{tabular}{c c c c c}
     \hline
     Min & Median & Average & Std. Dev. & Max \\
@@ -472,13 +472,13 @@ Table~\ref{tab:transfer-loc} shows lines of code for contracts with transfer.  T
   \includegraphics[width=\linewidth]{img/transfer_versions_clean.png}
   \caption{An overview of all the specific compiler versions used in contracts that contain a transfer function. }
   %\description{Solidity Compiler Version (Transfers)}
-  \label{fig:transfer_version}
+  \label{fig:send_version}
 \end{figure}
 
 
 \begin{table}
-  \caption{Statistics of Contracts containing transfer function}
-  \label{tab:transfer}
+  \caption{Statistics of Contracts containing send function}
+  \label{tab:send}
   \begin{tabular}{ccl}
     \hline
     Function & \# Contracts & \# Functions\\
