@@ -141,7 +141,7 @@ author2@email.com}
 %% The abstract is a short summary of the work to be presented in the
 %% article.
 \begin{abstract}
-    Ethereum is a blockchain platform which enables the use of smart contracts. Smart contracts will execute a set of instructions without intermediary party when called upon. The possibility to make calls to another contract or exchange crytocurrency allows for potential exploits to occur, most notable reentrancy.  The Solidity language for coding smart contracts has syntactic constucts created to be safer alternatives, and guards to aid in securing code against exploits. In this paper, we collect a total of \totalContracts verified Solidity smart contracts from Etherscan, to analyse the language constructs used in calling another contract or exchanging ether. We also analyse the usage of guards to make the code more secure.  For instnace, even though call is the unsafest function, it is still used by 50\% of the contracts in our dataset.  The safe method transfer is used by approximately one-third of contracts, and send is rarely used. 
+Ethereum is a blockchain platform that enables the use of smart contracts. Smart contracts will execute a set of instructions without an intermediary party when called upon. The possibility to make calls to another contract or exchange cryptocurrency allows for potential exploits to occur, most notable reentrancy. The Solidity language for coding smart contracts has syntactic constructs created to be safer alternatives, and guards to aid in securing code against exploits. In this paper, we collect a total of \totalContracts verified Solidity smart contracts from Etherscan, to analyze the language constructs used in calling another contract or exchanging ether. We also analyze the usage of guards to make the code more secure. For instance, even though call is the unsafest function, it is still used by 50\% of the contracts in our dataset. The safe method transfer is used by approximately one-third of contracts, and send is rarely used.
 
 %In this paper we will discuss and look at how one of these exploits, called the reentrancy attack, is possible. This attack is most well known for The DAO attack in 2016 where almost 55 million dollar got drained by an attacker who made use of this vulnerability in the smart contract. More specifically we will look at the concept in the Solidity programming language which was made specifically for the Ethereum blockchain. Also an overview of the different advantages and disadvantages of the different functions to exchange Ether, the currency used to execute transactions, will be given, how they work and how the call function might allow for certain exploits. The reentrancy vulnerability is still prevalent in smart contracts nowadays and forms a huge threat to applications and their users due to the huge possible financial losses that can happen. This research also includes an analysis of a verified smart contract database that was collected from Etherscan. This was done to detect potential vulnerabilities by looking for the presence of functions that allow for these attacks. Finally, the results of this analysis are discussed and there will be a brief discussion about prevention measures and methods to avoid a reentrancy attack.
 \end{abstract}
@@ -161,7 +161,7 @@ A common functionality of smart contracts is the possibility to make calls to an
 One of these dangers when calling an external contract is called reentrancy and is one of the most well known attacks due to the DAO Attack on June 2016 where around 3.6 million Ether was taken which equated to around \$50 million dollar at the time \cite{10.1007/978-3-662-54455-6_8}.  %This exploit is cemented in the history of Ethereum as it resulted into Ethereum being forked into Ethereum Classic and the Ethereum we know today. 
 %The original version of this attack involved functions that would be called repeatedly before the first function was finished. 
 
-Solidity is one of the major programming languages for smart contracts on Ethereum. To avoid these exploits, there have been introduced more language contructs and recommended coding patterns. More specifically, the function call() was to be replaced by the safer functions transfer() and send().  However, recently there has been a switch back to the call() function with the introduction of EIP 1884 \cite{eip1884}.  Other precautions instead must be taken to prevent reentrancy attacks, one recommendation is making use of safe code patterns and using guards. 
+Solidity is one of the major programming languages for smart contracts on Ethereum. To avoid these exploits, there have been introduced more language constructs and recommended coding patterns. More specifically, the function call() was to be replaced by the safer functions transfer() and send().  However, recently there has been a switch back to the call() function with the introduction of EIP 1884 \cite{eip1884}.  Other precautions instead must be taken to prevent reentrancy attacks, one recommendation is making use of safe code patterns and using guards. 
 
 In this paper, we conduct an exploratory research investigating how these calling functions are used in practice and if they are still commonly used for the current smart contracts being deployed in the Ethereum network.  For this study,  we collected a dataset of \totalContracts unique open-source verified smart contracts from Etherscan (from 2012-07-07 to 2022-01-06).  We present different characteristics for the contracts and the Solidity language constructs being used. 
 
@@ -210,13 +210,13 @@ The send function can be seem as a lower level implementation of transfer. Simil
 
 \subsubsection{Solidity Guards}
 
-Guards are language constructs to prevent access or revert a transaction.  In Solidity,  different guards have been introduced to the language over different versions such as Require,  Assert, and Revert.
+Guards are language constructs to prevent access or revert a transaction.  In Solidity,  \textit{Require} and \textit{Assert} have been introduced to the language in the version 0.4.10 (May 2017); \textit{Revert} was introduced in version 0.4.12 (Ago 2017).
 
-Both require and asset methods, check for a condition and raise an exception if such condition is not met. Any exception in a smart contract execution will cancel the transaction. Assert is supposed to be a check for internal errors and bugs. Assert will consume all remaining gas.  On the other hand, require intent is to be used as much as possible for developer to check for conditions. Require refunds remaining gas if it raises an exception. 
+Both {require} and {assert}, check for a condition and raise an exception if such condition is not met. Any exception in a smart contract execution will cancel the transaction. Assert is supposed to be a check for internal errors and bugs. Assert will consume all remaining gas.  On the other hand, require intent is to be used as much as possible for developer to check for conditions. Require refunds remaining gas if it raises an exception. 
 %
 Revert raises an exception while refunding the remaining gas. It is similar to a "throws new Exception()" in Java. 
 
-Those three method (assert, require, and revert) are guards to stop a transaction and prevent possible exploits in a smart contract. The usage of these constructs may indicate that developers are concern with the security of the contract.
+Those three methods (assert, require, and revert) are guards to stop a transaction and prevent possible exploits in a smart contract. The usage of these constructs may indicate that developers are concern with the security of the contract.
 
 \subsection{Reentrancy attack}
 
@@ -307,7 +307,7 @@ Table~\ref{tab:loc} shows the general statistics considering the lines of code o
 \end{tabular}
 \end{table}
 
-Now, we investigate how many Ether exchange methods and guards are being used in the contracts. Table~\ref{tab:results-all} shows how many contracts in our dataset has at least one of the methods, the overall count of the method, and the average number in the contracts that have at least one.  Even though, call is the unsafest method for Ether exchange,  it is used by 50\% of the contracts in the dataset.  On average, there are 2.3 call uses on the contracts.  Any contract using call have the potential to have a reentrancy vulnerability.  On the other hand, send which is a safer method and it is the least used (2\%). Trasnfer is the safest method, and it is used by roughly one-third of the contracts. 
+Now, we investigate how many Ether exchange methods and guards are being used in the contracts. Table~\ref{tab:results-all} shows how many contracts in our dataset has at least one of the methods, the overall count of the method, and the average number in the contracts that have at least one.  Even though, call is the unsafest method for Ether exchange,  it is used by 50\% of the contracts in the dataset.  On average, there are 2.3 call uses on the contracts.  Any contract using call have the potential to have a reentrancy vulnerability.  On the other hand, send which is a safer method and it is the least used (2\%). Transfer is the safest method, and it is used by roughly one-third of the contracts. 
 
 \begin{table}
 \center
@@ -327,7 +327,7 @@ Now, we investigate how many Ether exchange methods and guards are being used in
 \end{tabular}
 \end{table}
 
-On the guard methods shown in Table~\ref{tab:results-all}, require is used by the great majority of all contracts (97\%).  On average, there are 23.7 uses of require in the contracts. The great usage of this guard may be to counteract the vulnerabilities of call.  Revert is also commonly used by more then half of the contracts in our dataset.  Finaly,  Assert is the least used guard in our analysis.
+On the guard methods shown in Table~\ref{tab:results-all}, require is used by the great majority of all contracts (97\%).  On average, there are 23.7 uses of require in the contracts. The great usage of this guard may be to counteract the vulnerabilities of call.  Revert is also commonly used by more then half of the contracts in our dataset.  Finally,  Assert is the least used guard in our analysis.
 
 \subsection{Contracts by Version}
 
@@ -385,7 +385,7 @@ For the guards in Table~\ref{tab:results-version},  versions 0.8.x and 0.5.x sho
 
 \subsection{Contracts using Call}
 
-We focus only on the contracts that contain a call function. Since call is a very unsafe function, there is the possiblitiy for the contracts using it to suffer from a reentrancy vulnerability.  For this reason, such contracts may have different characteristics.  Table~\ref{tab:call-loc} shows the lines of code considering only the contracts that contain a call function. The average and median LoC values are higher than the ones for all contracts. Therefore, the contract with call in our dataset usually have more lines of code.  The call contract with the least lines of code is called \textit{FlashBotLowGas}.\footnote{\url{https://etherscan.io/address/0x90ab9a926a1593992547e0f9a0df6401f10421cd\#code}}
+We focus only on the contracts that contain a call function. Since call is a very unsafe function, there is the possibility for the contracts using it to suffer from a reentrancy vulnerability.  For this reason, such contracts may have different characteristics.  Table~\ref{tab:call-loc} shows the lines of code considering only the contracts that contain a call function. The average and median LoC values are higher than the ones for all contracts. Therefore, the contract with call in our dataset usually have more lines of code.  The call contract with the least lines of code is called \textit{FlashBotLowGas}.\footnote{\url{https://etherscan.io/address/0x90ab9a926a1593992547e0f9a0df6401f10421cd\#code}}
 
 \begin{table}[h]
 \center
@@ -410,7 +410,7 @@ Figure~\ref{fig:call_version} shows the Solidity versions for contracts with cal
   \label{fig:call_version}
 \end{figure}
 
-Table~\ref{tab:call} show the Ether exchange and guard methods considering only the 13,443 contracts that contains at least one call method.  We can see that approximately one-third of the contracts using call also use the send function.  We also like to highlight that there is a greater number of contracts with call using guards. For isntance,  99\% of the call contracts used Require compared to 97\% of all contracts; 39\% of the call contracts used Assert compared to 27\%  of all contracts; and 89\% of the call contracts used Revert compared to 51\% of all contracts. The higher usage of guards is probably to counter the vulnerabilities of call. This may be an indication that Solidity developers are concerned about the security of their contracts specially when using unsafe methods such as call. 
+Table~\ref{tab:call} show the Ether exchange and guard methods considering only the 13,443 contracts that contains at least one call method.  We can see that approximately one-third of the contracts using call also use the send function.  We also like to highlight that there is a greater number of contracts with call using guards. For instance,  99\% of the call contracts used Require compared to 97\% of all contracts; 39\% of the call contracts used Assert compared to 27\%  of all contracts; and 89\% of the call contracts used Revert compared to 51\% of all contracts. The higher usage of guards is probably to counter the vulnerabilities of call. This may be an indication that Solidity developers are concerned about the security of their contracts specially when using unsafe methods such as call. 
 
 \begin{table}
 \center
@@ -505,7 +505,7 @@ The most common Solidity versions for contracts using send were 0.8.7,  0.8.4,  
 %  \label{fig:send_version}
 %\end{figure}
 
-Table~\ref{tab:send} show the Ether exchange and guard methods considering only the 647 contracts that contains at least one send function.  The contracts percentage are different when contrasted with all contracts. For instance,  89\% of send contracts have a call function compared to 50\% of all contracts; 90\% of send contracts have at least one revert compared to 51\% of all contracts; and in the oppositive direction, 16\% of send contracts have at least one transfer method compared to 34\% of all contracts. 
+Table~\ref{tab:send} show the Ether exchange and guard methods considering only the 647 contracts that contains at least one send function.  The contracts percentage are different when contrasted with all contracts. For instance,  89\% of send contracts have a call function compared to 50\% of all contracts; 90\% of send contracts have at least one revert compared to 51\% of all contracts; and in the opposite direction, 16\% of send contracts have at least one transfer method compared to 34\% of all contracts. 
 
 \begin{table}
 \center
@@ -533,7 +533,7 @@ Juels, Kosba and Shi\cite{criminal} investigate the risk of smart contracts fuel
 
 Luu et al.  \cite{smarter} also investigate and introduce several security problems to manipulate smart contracts in an attempt to gain profit and propose ways to enhance the operational semantics of Ethereum. A focus is put on the semantic gap between the assumption contract writers make about the underlying execution semantics and the actual semantics of the contract are made as a reason for these security flaws. A tool OYENTE is also provided to detect bugs which is a symbolic execution tool. The model works directly with Ethereum virtual machine byte code and thus does not have a need for a higher level representation such as Solidity. An evaluation of OYENTE on 19366 smart contracts is given where 8333 contracts were documented as potentially having bugs.
 
-Mense and Flatscher \cite{security} summarize known vulnerabilities found by literature research and analysis such as external calls, gasless sends, mishandled exceptions and reentrancy. They also compare code analysis tools for their ability to identify vulnerabilities in smart contracts based on a taxonomy for vulnerabilities. The results of their paper show that reentrancy ranks the highest among the vulnerabilities that they have discussed and is detected by most of the tools used. They then delve deeper into the DAO hack aswell. 
+Mense and Flatscher \cite{security} summarize known vulnerabilities found by literature research and analysis such as external calls, gasless sends, mishandled exceptions and reentrancy. They also compare code analysis tools for their ability to identify vulnerabilities in smart contracts based on a taxonomy for vulnerabilities. The results of their paper show that reentrancy ranks the highest among the vulnerabilities that they have discussed and is detected by most of the tools used. They then delve deeper into the DAO hack as well. 
 
 
 Liu et al. \cite{reguard} present ReGuard which is a fuzzing-based analyzer to automatically detect reentrancy bugs in Ethereum smart contracts. They iteratively generate random (but diverse) transactions, this is called fuzz testing. Then based on the runtime they will identify reentrancy vulnerabilities in a contract. How the architecture works is they parse a smart contracts source or binary code to an intermediate representation which will then be transformed to C++, keeping the original behavior. Together with a runtime library, ReGuard executes the contract and runs an analysis of the operations for any reentrancy attacks.
@@ -556,11 +556,11 @@ A deep-learning based approach is used by Qian et al. \cite{automated}. The aim 
 
 \section{Final Remarks}
 
-In this paper, we conducted an exploratory study on the usage of specific Solidity language constructs in a dataset of \totalContracts contracts.  Even though, call is the unsafest method for Ether exchange it the most popular method being used by 50\% of contracts.  Perhaps because call can be used to transfer the execution control to another contract, and not only for ether exchange, is the reason for its popularity despite the fact that it is unsafe. The other methods for ether exchange, transfer is used by 34\% of contracts, and send is rarely used (2\% of the contracts). 
+In this paper, we conducted an exploratory study on the usage of specific Solidity language constructs in a dataset of \totalContracts contracts. Even though, call is the unsafest method for Ether exchange it is the most popular method being used by 50\% of contracts. Perhaps because call can be used to transfer the execution control to another contract, and not only for ether exchange, is the reason for its popularity despite the fact that it is unsafe. The other methods for ether exchange, transfer is used by 34\% of contracts, and send is rarely used (2\% of the contracts).
 
-The most popular Solidity verions in our dataset were 0.8.4 (18.7\% of the contracts),  0.6.12 (17.1\% of the contracts),  and 0.8.7 (15.3\% of the contracts).  We also saw that the usage of call,  transfer,  assert, and revert can vary a lot from different versions of the contract.
+The most popular Solidity versions in our dataset were 0.8.4 (18.7\% of the contracts), 0.6.12 (17.1\% of the contracts), and 0.8.7 (15.3\% of the contracts). We also saw that the usage of call, transfer, assert, and revert can vary a lot from different versions of the contract.
 
-When we focused on only contract using call, the average and median size in LoC of the contracts are higher than the normal. We also noticed an increased percentage of call contracts using more guard methods. 
+When we focused on only contracts using call, the average and median size in LoC of the contracts are higher than normal. We also noticed an increased percentage of call contracts using more guard methods.
 
 As future work, we plan to execute vulnerability detection tools to further investigate the characteristics of the contracts in our dataset.
 
