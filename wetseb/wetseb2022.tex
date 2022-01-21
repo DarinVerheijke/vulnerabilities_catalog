@@ -101,8 +101,8 @@
 %%
 %% The "title" command has an optional parameter,
 %% allowing the author to define a "short title" to be used in page headers.
-\title{Solidity Smart Contracts: Language constructs for control/currency exchange and guards}
-
+%\title{Solidity Smart Contracts: Language constructs for control/currency exchange and guards}
+\title{An Exploratory Study on Solidity Guards and Ether Exchange Constructs}
 
 % Double blind Workshop - No author information in this version
 
@@ -141,7 +141,7 @@ author2@email.com}
 %% The abstract is a short summary of the work to be presented in the
 %% article.
 \begin{abstract}
-    Ethereum is a blockchain platform which enables the use of smart contracts. Smart contracts will execute a set of instructions without intermediary party when called upon. The possibility to make calls to another contract or exchange crytocurrency allows for potential exploits to occur, most notable reentrancy.  The Solidity language for coding smart contracts has syntactic constucts created to be safer alternatives, and guards to aid in securing code against exploits. In this paper, we collect a total of \totalContracts verified Solidity smart contracts from Etherscan, to analyse the language constructs used in calling another contract or exchanging ether. We also analyse the usage of guards to make the code more secure. 
+    Ethereum is a blockchain platform which enables the use of smart contracts. Smart contracts will execute a set of instructions without intermediary party when called upon. The possibility to make calls to another contract or exchange crytocurrency allows for potential exploits to occur, most notable reentrancy.  The Solidity language for coding smart contracts has syntactic constucts created to be safer alternatives, and guards to aid in securing code against exploits. In this paper, we collect a total of \totalContracts verified Solidity smart contracts from Etherscan, to analyse the language constructs used in calling another contract or exchanging ether. We also analyse the usage of guards to make the code more secure.  For instnace, even though call is the unsafest function, it is still used by 50\% of the contracts in our dataset.  The safe method transfer is used by approximately one-third of contracts, and send is rarely used. 
 
 %In this paper we will discuss and look at how one of these exploits, called the reentrancy attack, is possible. This attack is most well known for The DAO attack in 2016 where almost 55 million dollar got drained by an attacker who made use of this vulnerability in the smart contract. More specifically we will look at the concept in the Solidity programming language which was made specifically for the Ethereum blockchain. Also an overview of the different advantages and disadvantages of the different functions to exchange Ether, the currency used to execute transactions, will be given, how they work and how the call function might allow for certain exploits. The reentrancy vulnerability is still prevalent in smart contracts nowadays and forms a huge threat to applications and their users due to the huge possible financial losses that can happen. This research also includes an analysis of a verified smart contract database that was collected from Etherscan. This was done to detect potential vulnerabilities by looking for the presence of functions that allow for these attacks. Finally, the results of this analysis are discussed and there will be a brief discussion about prevention measures and methods to avoid a reentrancy attack.
 \end{abstract}
@@ -152,31 +152,30 @@ Blockchain,  Smart Contracts, Solidity,  Reentrancy,  Guards.
 
 
 \section{Introduction}
-A blockchain is an append-only transactional database where the information is structured together in groups, also known as blocks \cite{smart_inspect, smarter}. Each block has certain storage capacities and is chained onto the previous filled block, thus forming a blockchain. Another way to define it is a shared, immutable ledger that records transactions which can be used to track different assets. Most notable uses of this blockchain technology are the cryptocurrencies Bitcoin\cite{article} and Ether \cite{ethereum, white_paper} on the Ethereum network. One important difference between these two blockchain platforms is that Ethereum enables the deployment of smart contracts. 
+A blockchain is an append-only transactional database where the information is structured together in groups, also known as blocks \cite{smart_inspect, smarter}.  Each block has certain storage capacities and is chained onto the previous filled block, thus forming a blockchain. Another way to define it is a shared, immutable ledger that records transactions which can be used to track different assets. Most notable uses of this blockchain technology are the cryptocurrencies Bitcoin\cite{article} and Ether \cite{ethereum, white_paper} on the Ethereum network. One important difference between these two blockchain platforms is that Ethereum enables the deployment of smart contracts. 
 
 A smart contract is a contract which executes automatically when called upon where the terms between the two parties is written in code (on the blockchain). These contracts then run when a function is called and the conditions for that function are met and can be used to automate executions of agreements without any intermediary party \cite{criminal, 10.1145/2993600.2993611, smarter}. In their simplest form a contract is just a collection of functions. Interesting to note is that all smart contract transactions are traceable, transparent and also irreversible \cite{smart_inspect, smarter}.
 
 A common functionality of smart contracts is the possibility to make calls to another contract on the same blockchain platform. This however needs to be done with caution as untrusted contracts can not only introduce errors but also risks as the contract or call may execute malicious code and exploit vulnerabilities. Every call transfers execution control to the called contract.
 
-One of these dangers when calling an external contract is called reentrancy and is one of the most well known attacks due to the DAO Attack on June 2016 where around 3.6 million Ether was taken which equated to around \$50 million dollar at the time \cite{10.1007/978-3-662-54455-6_8}. This exploit is cemented in the history of Ethereum as it resulted into Ethereum being forked into Ethereum Classic and the Ethereum we know today. The original version of this attack involved functions that would be called repeatedly before the first function was finished. 
+One of these dangers when calling an external contract is called reentrancy and is one of the most well known attacks due to the DAO Attack on June 2016 where around 3.6 million Ether was taken which equated to around \$50 million dollar at the time \cite{10.1007/978-3-662-54455-6_8}.  %This exploit is cemented in the history of Ethereum as it resulted into Ethereum being forked into Ethereum Classic and the Ethereum we know today. 
+%The original version of this attack involved functions that would be called repeatedly before the first function was finished. 
 
-Solidity is one of the major programming languages for smart contracts on Ethereum. To avoid these exploits there have been introduced some best practices. More specifically the function call() was to be replaced by the more safe functions transfer() and send().  However, recently there has been a switch back to the call() function with the introduction of EIP 1884 \cite{eip1884}.  Other precautions instead must be taken to prevent reentrancy attacks, one recommendation is making use of safe code patterns and using guard constructs. 
+Solidity is one of the major programming languages for smart contracts on Ethereum. To avoid these exploits, there have been introduced more language contructs and recommended coding patterns. More specifically, the function call() was to be replaced by the safer functions transfer() and send().  However, recently there has been a switch back to the call() function with the introduction of EIP 1884 \cite{eip1884}.  Other precautions instead must be taken to prevent reentrancy attacks, one recommendation is making use of safe code patterns and using guards. 
 
-In this paper, we will investigate how these calling functions are used in practice and if they are still commonly used for the current smart contracts being deployed in the Ethereum network.  We collected a dataset of \totalContracts unique open-source verified smart contracts from Etherscan (from 2012-07-07 to 2022-01-06).  In this exploratory study,  we present different characteristics for the contracts and the Solidity language constructs being used. 
+In this paper, we conduct an exploratory research investigating how these calling functions are used in practice and if they are still commonly used for the current smart contracts being deployed in the Ethereum network.  For this study,  we collected a dataset of \totalContracts unique open-source verified smart contracts from Etherscan (from 2012-07-07 to 2022-01-06).  We present different characteristics for the contracts and the Solidity language constructs being used. 
 
 
 
 
 \section{Background}
-An introduction to some important concepts such as blockchain, the consensus mechanism used in Ethereum, smart contracts and reentrancy attacks is given. The scope of these concepts will be kept to the Ethereum blockchain and one of its programming languages Solidity \cite{solidity}.
+%An introduction to some important concepts such as blockchain, the consensus mechanism used in Ethereum, smart contracts and reentrancy attacks is given. The scope of these concepts will be kept to the Ethereum blockchain and one of its programming languages Solidity \cite{solidity}.
 
 
-\subsection{Ethereum \& Smart contracts}
-Ethereum differs from Bitcoin in that it enables the deployment of smart contracts and decentralized applications also known as dApps with built-in economic functions. While bitcoin its primary focus is to be a digital currency payment network, Ethereum is designed to be a general-purpose programmable blockchain that runs a virtual machine capable of executing code.
-Ether is the currency used to complete transactions on the network and is used as a way to meter and constrain execution resource costs. In comparison to bitcoin, Ether is designed to be a utility currency which is used to call transactions on the Ethereum platform as a sort of fee \cite{mastering}. % Ethereum has two account types, Externally-owned accounts and contracts. Externally-owned accounts can be controlled by anyone who has the private keys to this account while smart contracts are deployed to the network and are controlled by code. 
-Smart contracts can be used to create a range of dApps.  An important feature of smart contracts is that when a function is called and the conditions for that function are met there is an automatic execution of the set agreements without any intermediary party \cite{ethereum, white_paper}.
-
-%We take a look at the vending machine example introduced by Nick Szabo, who first coined the term 'Smart contract'\cite{nick}. A simple vending machine will take in coins and via a simple mechanism dispense change and the output we selected. How a vending machine removes the need for a vendor employee, smart contracts remove the intermediary party. Some important properties of smart contracts is that they are immutable and deterministic. Immutable because once deployed due to the nature of how a blockchain works, the code can not change of the smart contract. The only way to modify a smart contract is to deploy a new instance (and thus a new smart contract). Deterministic in the way the outcome after is identical for everyone who, given the same transaction parameters and state of the Ethereum blockchain, executes the contract \cite{white_paper}.
+%\subsection{Ethereum \& Smart contracts}
+%Ethereum differs from Bitcoin in that it enables the deployment of smart contracts and decentralized applications also known as dApps with built-in economic functions. While bitcoin its primary focus is to be a digital currency payment network, Ethereum is designed to be a general-purpose programmable blockchain that runs a virtual machine capable of executing code.
+%Ether is the currency used to complete transactions on the network and is used as a way to meter and constrain execution resource costs. In comparison to bitcoin, Ether is designed to be a utility currency which is used to call transactions on the Ethereum platform as a sort of fee \cite{mastering}. 
+%Smart contracts can be used to create a range of dApps.  An important feature of smart contracts is that when a function is called and the conditions for that function are met there is an automatic execution of the set agreements without any intermediary party \cite{ethereum, white_paper}.
 
 
 \subsection{Solidity}
@@ -186,6 +185,13 @@ Solidity~\cite{solidity} is one of the main languages to code smart contracts in
 \subsubsection{Solidity Ether Exchange}
 
 We like to highlight the language constructs use to exchange cryptocurrency among contracts: call, send, and transfer (Table~\ref{tab:freq}).
+
+The call function is a low-level interface for sending a message to a contract and it is also a way to send Ether to another address.  The call function transfers the execution control to the called contract and the caller can forward any amount of gas.  Therefore,  the call function has the potential to introduce vulnerabilities, most notably reentrancy.  
+
+The transfer method was first introduced in the version 0.4.10 (May 2017) of the Solidity language.  It provides a safe-by-design method to transfer cryptocurrency.  Even though, this method also transfers the execution control to the caller,  it has a gas limit which prevents abuse.  If the transfers fails,  an exception is raised, which also adds to the security of this method as the exception reverts the transaction.  Due to automatically reverting in case of errors, the transfer function is recommended in most cases. 
+
+The send function can be seem as a lower level implementation of transfer. Similar to transfer,  it provides a safe-by-design function to transfer cryptocurrency,  with a gas limit to prevent exploits. The major difference between send and transfer, is that send returns false if it fails, delegating the error handling to the developer.
+
 
 \begin{table}
 \center
@@ -201,12 +207,6 @@ We like to highlight the language constructs use to exchange cryptocurrency amon
   \hline
 \end{tabular}
 \end{table}
-
-The call function is a low-level interface for sending a message to a contract and it is also a way to send Ether to another address.  The call function transfers the execution control to the called contract and the caller can forward any amount of gas.  Therefore,  the call function has the potential to introduce vulnerabilities, most notably reentrancy.  
-
-The transfer method was first introduced in the version 0.4.10 (May 2017) of the Solidity language.  It provides a safe-by-design method to transfer cryptocurrency.  Even though, this method also transfers the execution control to the caller,  it has a gas limit which prevents abuse.  If the transfers fails,  an exception is raised, which also adds to the security of this method as the exception reverts the transaction.  Due to automatically reverting in case of errors, the transfer function is recommended in most cases. 
-
-The send function can be seem as a lower level implementation of transfer. Similar to transfer,  it provides a safe-by-design function to transfer cryptocurrency,  with a gas limit to prevent exploits. The major difference between send and transfer, is that send returns false if it fails, delegating the error handling to the developer.
 
 \subsubsection{Solidity Guards}
 
@@ -292,7 +292,7 @@ Then, we used the cloc tool on the contracts to discover how many lines of code 
 \subsection{Overall Analysis}
 
 First, we show some general characteristics on our dataset.
-Table~\ref{tab:loc} shows the general statistics considering the lines of code on the contract. We can see that the contracts in our dataset are small in lines of codes, with an average of 256 LoC and a median of 356 LoC. That is expected, as smart contract code tends to be smaller when compared to software code in other domains.  The smallest contracts have only 2 LoC.  For example, the contract \textit{BlackHole}\footnote{\url{https://etherscan.io/address/0x727E9A3067DeEaF031916fA0fC53B02cf44F8731\#code}} only has two lines, a pragma definition for the solidity version, and an empty contract definition. The biggest contract is \textit{RewardControl}\footnote{\url{https://etherscan.io/address/0xcf8Fe5bB819359Ea02DF65E50B6194D12b69aB88\#code}} with 6,461 LoC. 
+Table~\ref{tab:loc} shows the general statistics considering the lines of code on the contract. We can see that the contracts in our dataset are small in lines of codes, with a median of 256 LoC and an average of 356 LoC. That is expected, as smart contract code tends to be smaller when compared to software code in other domains.  The smallest contracts have only 2 LoC.  For example, the contract \textit{BlackHole}\footnote{\url{https://etherscan.io/address/0x727E9A3067DeEaF031916fA0fC53B02cf44F8731\#code}} only has two lines, a pragma definition for the solidity version, and an empty contract definition. The biggest contract is \textit{RewardControl}\footnote{\url{https://etherscan.io/address/0xcf8Fe5bB819359Ea02DF65E50B6194D12b69aB88\#code}} with 6,461 LoC. 
 
 \begin{table}
 \center
@@ -539,7 +539,7 @@ Mense and Flatscher \cite{security} summarize known vulnerabilities found by lit
 Liu et al. \cite{reguard} present ReGuard which is a fuzzing-based analyzer to automatically detect reentrancy bugs in Ethereum smart contracts. They iteratively generate random (but diverse) transactions, this is called fuzz testing. Then based on the runtime they will identify reentrancy vulnerabilities in a contract. How the architecture works is they parse a smart contracts source or binary code to an intermediate representation which will then be transformed to C++, keeping the original behavior. Together with a runtime library, ReGuard executes the contract and runs an analysis of the operations for any reentrancy attacks.
 
 
-%SmartCheck is an extensible static analysis tool to detect code issues in Solidity by Tikhomirov et al.\cite{smartcheck} where they translate Solidity into an XML-based representation and check it against XPath patterns. They also used a real world dataset to evaluate their tool and also make a comparison to the earlier mentioned Oyente. 
+SmartCheck is an extensible static analysis tool to detect code issues in Solidity by Tikhomirov et al.\cite{smartcheck} where they translate Solidity into an XML-based representation and check it against XPath patterns. They also used a real world dataset to evaluate their tool and also make a comparison to the earlier mentioned Oyente. 
 
 
 Samreen and Alalfi  \cite{survey} explain eight vulnerabilities by looking at past exploitation case scenarios and review some of the available tools and applications to detect these vulnerabilities. For each case they discuss the vulnerability exploited, the tactic used as well as the financial loss what happened. A coverage is given of some preventive techniques as protection against some of these exploits. The tools/frameworks they discuss adopt either a form of static analysis such as symbolic execution and control flow graph construction or dynamic analysis such as the fuzzing testing or tracing the sequence of instructions that are executed at run time. 
@@ -550,12 +550,19 @@ Bragagnolo et al.~\cite{rocha} address the lack of inspectability of a deployed 
 
 Wang et al. \cite{contractward} evaluate a set of real-world smart contracts with ContractWard which uses machine learning techniques to detect vulnerabilities in smart contracts. Their idea was proposed due to existing detection methods being mainly based on symbolic execution or analysis which are very time-consuming. The system extracts dimensional bigram features from simplified operation codes to construct a feature space and is able to get a predictive recall and precision of over 96\% based on their dataset of 49502 smart contracts on 6 vulnerabilities.
 
-%A deep-learning based approach is used by Qian et al. \cite{automated}. The aim is to precisely detect reentrancy bugs using a bidirectional long-short term memory with attention mechanism. They also propose using a contract snippet as another way to represent a smart contract only capturing key semantic sentences which contain related and critical information such as control flow and data dependencies. These are then used as input to the sequential models. They show that this deep-learning approach outperforms other state-of-the-art smart contract vulnerability tools.
+A deep-learning based approach is used by Qian et al. \cite{automated}. The aim is to precisely detect reentrancy bugs using a bidirectional long-short term memory with attention mechanism. They also propose using a contract snippet as another way to represent a smart contract only capturing key semantic sentences which contain related and critical information such as control flow and data dependencies. These are then used as input to the sequential models. They show that this deep-learning approach outperforms other state-of-the-art smart contract vulnerability tools.
 
 %Slither by Feist et al. \cite{slither} is a static analysis framework that converts Solidity smart contracts into an intermediate representation which they call SlithIR. Static Single Assignment forms are used aswell as a reduced instruction set for ease of implementation. Their framework has use cases in automated detection of vulnerabilities, detection of code optimization opportunities, improvement of clarity and ease of understanding of the contracts. An evaluation of the proposed frameworks capabilities is done using a set of real-world smart contracts. 
 
 \section{Final Remarks}
 
+In this paper, we conducted an exploratory study on the usage of specific Solidity language constructs in a dataset of \totalContracts contracts.  Even though, call is the unsafest method for Ether exchange it the most popular method being used by 50\% of contracts.  Perhaps because call can be used to transfer the execution control to another contract, and not only for ether exchange, is the reason for its popularity despite the fact that it is unsafe. The other methods for ether exchange, transfer is used by 34\% of contracts, and send is rarely used (2\% of the contracts). 
+
+The most popular Solidity verions in our dataset were 0.8.4 (18.7\% of the contracts),  0.6.12 (17.1\% of the contracts),  and 0.8.7 (15.3\% of the contracts).  We also saw that the usage of call,  transfer,  assert, and revert can vary a lot from different versions of the contract.
+
+When we focused on only contract using call, the average and median size in LoC of the contracts are higher than the normal. We also noticed an increased percentage of call contracts using more guard methods. 
+
+As future work, we plan to execute vulnerability detection tools to further investigate the characteristics of the contracts in our dataset.
 
 
 %%
