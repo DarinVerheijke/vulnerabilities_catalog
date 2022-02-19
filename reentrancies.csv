@@ -1,4 +1,4 @@
-,ContractName,ContractAddress,CompilerVersion,Call,Call_check,Transfer,Send,Withdraw,Require,Asserts,Throws,LOC,Reverts,Reentrancy
+,ContractName,ContractAddress,CompilerVersion,Call,Call_check,Send,Transfer,Withdraw,Require,Asserts,Throws,LOC,Reverts,Reentrancy
 0,SphynxCat,0x6326dc63bda031818e652e717da77b9e7b6432c6,0.6.12,2,2,0,0,0,21,1,0,324,2,0
 1,LiquidityGeneratorToken,0x441aea98c4ca18ba8596d039dae85e999740a877,0.6.12,2,2,0,0,0,25,1,0,694,2,0
 2,CoinToken,0x388fd76cc5dd56747432d248467f25d60b10c720,0.8.2,2,2,0,1,0,22,1,0,432,2,0
