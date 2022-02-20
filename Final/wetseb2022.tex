@@ -47,6 +47,7 @@
 
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{todonotes}
 
 \newcommand{\totalContracts}{26,799\xspace}
 
@@ -174,20 +175,29 @@ An introduction to some important concepts such as blockchain, the consensus mec
 A blockchain is a decentralized, distributed and immutable ledger that differs from a typical database in the way that it stores information. All recorded transactions, structured in blocks, are linked together using cryptography. Each block will contain a hash of the previous block, a timestamp and transaction data. As each block contains information from the previous block due to the hash, they will form a chain, thus forming a blockchain~\cite{article}. It is a peer-to-peer network connecting participants. These participants will be forced to cooperate using a consensus mechanism which enforces rules in order to decentralize control.
 
 \subsection{Consensus mechanisms}
-A blockchain reaches consensus when at least 51\% of the nodes on the network agree on the next state of the network. These consensus mechanisms are designed to prevent 51\% attacks on the network. Executing a 51\% attack would require the attacker to have 51\% of the nodes on the network which is considered theoretically impossible due to the decentralized nature of a blockchain but would allow the attacker to decide on the next state of the network by himself due to controlling over half of the nodes and thus choosing which state is correct. Currently, Ethereum uses a proof-of-work consensus mechanism which defines the work that miners (network operators) have to do add a new valid block to the chain. The 'work' they do is a cryptographic math puzzle where the winner (i.e. the fastest to solve the puzzle) earns a reward and shares the new block with the rest of the network. This concept is called 'mining' and has as purpose to secure the blockchain with as incentive newly minted currency of the respective blockchain as a way to reward those who contribute to the system. There has been some criticism on POW due to the amount of energy used and needed to keep the network safe. The Ethereum network consumes 73.2 TWh annually which is comparable to the amount of energy used in Belgium which is 82.16 TWh. Ethereum thus plans to move to proof-of-stake which at a high level has the same end-goal as POW. Very briefly explained, miners will be replaced with validators who can stake their Ether to activate the ability to create new blocks. This consensus mechanism should also have a stronger immunity to centralization as POS should lead to more nodes in the network. For more information on the POS consensus mechanism and Ethereum their change to it we refer to the documentation~\cite{ethereum}~\cite{white_paper}.
+\todo[inline]{Wall of text. Break the text bellow into at least 3 paragraphs.}
+
+A blockchain reaches consensus when at least 51\% of the nodes on the network agree on the next state of the network. These consensus mechanisms are designed to prevent 51\% attacks on the network. Executing a 51\% attack would require the attacker to have 51\% of the nodes on the network which is considered theoretically impossible due to the decentralized nature of a blockchain but would allow the attacker to decide on the next state of the network by himself due to controlling over half of the nodes and thus choosing which state is correct. Currently, Ethereum uses a proof-of-work consensus mechanism which defines the work that miners (network operators) have to do add a new valid block to the chain. The 'work' they do is a cryptographic math puzzle where the winner (i.e. the fastest to solve the puzzle) earns a reward and shares the new block with the rest of the network. This concept is called 'mining' and has as purpose to secure the blockchain with as incentive newly minted currency of the respective blockchain as a way to reward those who contribute to the system. There has been some criticism on POW due to the amount of energy used and needed to keep the network safe. The Ethereum network consumes 73.2 TWh annually which is comparable to the amount of energy used in Belgium which is 82.16 TWh. Ethereum thus plans to move to proof-of-stake which at a high level has the same end-goal as POW. Very briefly explained, miners will be replaced with validators who can stake their Ether to activate the ability to create new blocks. This consensus mechanism should also have a stronger immunity to centralization as POS should lead to more nodes in the network. For more information on the POS consensus mechanism and Ethereum their change to it we refer to the documentation~\cite{ethereum,  white_paper}.
 
 \subsection{Ethereum \& Smart contracts}
-Ethereum differs from Bitcoin in that it enables the deployment of smart contracts and decentralized applications also known as dApps with built-in economic functions. While bitcoin its primary focus is to be a digital currency payment network, Ethereum is designed to be a general-purpose programmable blockchain that runs a virtual machine capable of executing code.
-Ether is the currency used to complete transactions on the network and is used as a way to meter and constrain execution resource costs. In comparison to bitcoin, Ether is designed to be a utility currency which is used to call transactions on the Ethereum platform as a sort of fee~\cite{mastering}. Ethereum has two account types, Externally-owned accounts and contracts. Externally-owned accounts can be controlled by anyone who has the private keys to this account while smart contracts are deployed to the network and are controlled by code.
-Smart contracts can be used to create a range of dApps.  An important feature of smart contracts is that when a function is called and the conditions for that function are met there is an automatic execution of the set agreements without any intermediary party~\cite{ethereum, white_paper}.
 
-We take a look at the vending machine example introduced by Nick Szabo, who first coined the term 'Smart contract'~\cite{nick}. A simple vending machine will take in coins and via a simple mechanism dispense change and the output we selected. How a vending machine removes the need for a vendor employee, smart contracts remove the need for an intermediary party. Some important properties of smart contracts is that they are immutable and deterministic. Immutable because once deployed due to the nature of how a blockchain works, the code can not change of the smart contract. The only way to modify a smart contract is to deploy a new instance (and thus a new smart contract). Deterministic in the way the outcome after is identical for everyone who, given the same transaction parameters and state of the Ethereum blockchain, executes the contract ~\cite{white_paper}.
+Ethereum differs from Bitcoin in that it enables the deployment of smart contracts. % and decentralized applications also known as dApps with built-in functions.  Henrique: DApps are just smart contracts being used with other codes.
+While bitcoin its primary focus is to be a digital currency payment network, Ethereum is designed to be a general-purpose programmable blockchain that runs a virtual machine capable of executing code.
+Ether is the cryptocurrency used to pay for transactions on the network~\cite{mastering}.% and is used as a way to meter and constrain execution resource costs.  
+%% *** Henrique: not true.  Gas constraints the execution resource costs. We pay Gas with Ether but conveying that Ether is the one restricting execution is misleading.
+%In comparison to bitcoin, Ether is designed to be a utility currency which is used to call transactions on the Ethereum platform as a sort of fee~\cite{mastering}.
 
-Important to note, contracts are only run if they are called by a transaction. A contract can call another contract that in its turn can then call another contract however the first part of this chain will always be a transaction called by an Externally-owned account. All transactions will either successfully terminate or revert. While a contract can not be changed, it can be deleted, removing the code and its storage from its address leaving an empty account. Any transactions sent there will not result in any execution of code. 
+Ethereum has two account types,  external accounts (i.e., users) and contracts. Externally-owned accounts can be controlled by anyone who has the private keys to this account while smart contracts are deployed to the network and are controlled by code.
+Smart contracts can be used to create a range of dApps.  An important feature of smart contracts is that when a function is called and the conditions for that function are met there is an automatic execution of the set instructions without any intermediary party~\cite{ethereum, white_paper}.
 
-Executing a transaction requires a fee which is called the gas fee. It refers to the amount of computational effort required to execute specific operations, these fees are paid in Ether. It's part of the reward miners get in exchange for their service. Gas prices are denoted in gwei which is equal to $10^{-9}$ Ether. These fees help keep the network secure by preventing bad actors from spamming the network ~\cite{docs}.
+Consider the vending machine example introduced by Szabo~\cite{nick}. A simple vending machine will take in coins, and via a simple mechanism dispense change and the output we selected. How a vending machine removes the need for a vendor employee, smart contracts remove the need for an intermediary party. Important properties of smart contracts are immutability and determinism. Immutable because once deployed, due to the nature of how a blockchain works, it is not possible to change the smart contract code (although its internal state may change). The only way to modify a smart contract code is to deploy a new instance (and thus a new smart contract). Deterministic in the way the outcome after is identical for everyone who, given the same transaction parameters and state of the Ethereum blockchain, executes the contract~\cite{white_paper}.
 
-Anybody with enough Ether can deploy and write a smart contract to the network. Deployment of a smart contract is also considered a transaction and thus also requires a gas fee.
+Important to note, contracts are only executed if called by an account (either external or contract). A contract can call a different contract that in its turn can then call another one. However, the initial trigger will always be a call by an external account (i.e., user request). All nested calls will either sucessfully complete or rollback and revert. If completed, the result from those calls will be saved into a transaction. While a contract code can not be changed or patched, it can be ``killed'' which will stop the contract from receiving and responding to calls.
+
+Executing any operation in Ethereum requires Gas. Gas is a resource to measure the computational effort required to execute specific operations. Gas is bought by the user triggering a call to a contract with Ether. This is considered a transactional fee, which is paid to the miner who spends computational resources executing and approving the transaction results from the original call. Gas prices are denoted in Gwei which is equal to $10^{-9}$ Ether. These fees help keep the network secure by preventing bad actors from spamming the network~\cite{docs}.
+
+%Anybody with enough Ether can deploy and write a smart contract to the network. Deployment of a smart contract is also considered a transaction and thus also requires a gas fee.
+
 \subsection{Solidity}
 
 Solidity~\cite{solidity} is one of the main languages to code smart contracts in the Ethereum platform. Solidity is an object-oriented, high-level language that has syntax comparable to C++.
@@ -212,8 +222,8 @@ The send function can be seen as a lower-level implementation of transfer. Simil
     Function & Gas Limit & Error Handling\\
     \hline
     call & Custom & Returns false on failure\\
-    transfer & 2300 & Throws exception on failure\\
-    send & 2300 & Returns false on failure\\
+    transfer & 2,300 & Throws exception on failure\\
+    send & 2,300 & Returns false on failure\\
   \hline
 \end{tabular}
 \end{table}
@@ -232,7 +242,7 @@ Those three methods (assert, require, and revert) are guards to stop a transacti
 
 The call function has some vulnerabilities. Every call to another contract transfers execution control to the called contract. Untrusted contracts may introduce and execute malicious code or exploit vulnerabilities. One of these major vulnerabilities is called the reentrancy attack, which takes advantage of the transfer of execution control by making recursive calls back to the original contract, repeating executions, and creating new transactions.
 
-The two main types of reentrancy attacks are single function and cross-function: Single function, and Cross-function.
+The two main types of reentrancy attacks are: Single function, and Cross-function.
 
 \subsubsection{Single function reentrancy attack}
 This version repeatedly calls the involved function before the first invocation of the function is finished.  Listing~\ref{lst:reentrancy1} shows a code snipped with this exploit.
@@ -252,7 +262,7 @@ function () public payable {
 }
 \end{lstlisting}
 
-In this example,  an attacker can recursively call the \texttt{withdrawBalance()} function and drain the whole contract as the user's balance is only set to 0 at the very end of the function.
+In this example,  an attacker can recursively call the \texttt{withdrawBalance()} function and drain all Ether stored in this contract as the user's balance is only set to 0 at the very end of the function.
 
 \subsubsection{Cross-function reentrancy attack}
 When a function shares a state with another function there is a possibility of a cross-function reentrancy attack.  Listing~\ref{lst:reentrancy2}  shows a code snipped with a cross-function reentrancy vulnerability. 
@@ -277,12 +287,19 @@ function withdrawBalance() public {
 
 Here the attacker will call the transfer function when the code is executed on an external call in \texttt{withdrawBalance()},  again the user's balance is not yet set to 0 and thus they will be able to transfer tokens again. A simple solution to both these types of attacks is updating the balance before transferring control to another function or contract.  Another simple solution would be to use transfer or send (the safer-by-design constructs) instead of call.
 
-\subsection{Prevention}
+\subsection{Reentrancy Prevention}
 In this section we will discuss different patterns and methods to reduce the possibility of attacks and exploits in a smart contract. 
 
 \subsubsection{Checks Effects Interactions pattern}
-The goal of this pattern is to reduce the attack surface for malicious contracts who try to hijack control flow after a call. 
-As mentioned before, control flow will be transferred to an external contract when calling an external address. In case we have a bad actor, this can cause unexpected behavior and possibly allow the attacker to repeatedly invoke functions that should've been only executed once. The Checks Effects Interactions pattern will update all state variables prior to an external call.~\cite{cei} In other words, the effect is accounted for before completion. This will not cause any issues if anything goes wrong with the contract due to the whole transaction, including the reduction of balance being reverted. An example is given in the code below ~\ref{lst:cei} of the different parts of this pattern, this method was first described in the Solidity documentation~\cite{solidity}. As we can see in the contract, the first step is utilizing a require check in order to make sure that the balance of the user is sufficient. After that the user balance gets reduced which is the effect and all external calls take place after this effect. Notice the use of the transfer function, this propagates every exception that is thrown at the receiving address to the sending contract, which leads to the automatic revert of all changes in the state . The pattern discussed in the next section can be used to include exception propagation for both the send and call function.
+
+The goal of this pattern is to reduce the attack surface for malicious contracts who try to hijack control flow after a call.  As mentioned before, control flow will be transferred to an external contract when calling an external address. In case we have a bad actor, this can cause unexpected behavior and possibly allow the attacker to repeatedly invoke functions that should've been only executed once. 
+
+The Checks Effects Interactions pattern will update all state variables prior to an external call~\cite{cei}. In other words, the effect is accounted for before completion. This will not cause any issues if anything goes wrong with the contract due to the whole transaction, including the reduction of balance being reverted. 
+
+We give a code example bellow (Lising~\ref{lst:cei}) illustrating this pattern, which is described in the Solidity documentation~\cite{solidity}. As shown in the example, first we use a \textit{require} guard to check whether the user's balance is sufficient. Second, we set the user's balance to the appropriate amount before making any external calls. Finally, in the end, we can make the external calls.
+
+Moreover, since we use the transfer function in the example, it is already safe against reentrancy due to its Gas limit. Transfer will throw an exception in case of an error, which leads to the automatic revert of all changes in the contract's state. 
+However, even if we used the unsafe \textit{call} method instead of transfer, this pattern would protect the contract against reentrancy exploit. 
 
 \begin{lstlisting}[language=Solidity, caption=Checks Effects Interactions pattern, label={lst:cei}]
 contract ChecksEffectsInteractions {
@@ -304,8 +321,14 @@ contract ChecksEffectsInteractions {
 \end{lstlisting}
 
 \subsubsection{Guard Check pattern}
-This pattern can be used to validate user inputs, check the contract state before executing any logic aswell as invariants in the code and rule out any conditions that should not be possible. Triggering exceptions in Solidity is done by using either the revert(), require() or assert() functions. Solidity documentation recommends require() to ensure valid conditions such as inputs, state variables or to validate return values from calls to external contracts ~\cite{solidity}. This should be implemented towards the beginning of the function as a way to validate. Assert() is used to test for internal errors and to check invariants and is used towards the end of a function. Both these functions will evaluate the parameters and throw an exception only if it evaluates to false, the revert() function will throw an exception in each case and is used in more advanced scenarios such as if-else trees. An example of the different guards can be seen in the following code fragment~\ref{lst:guard}where we made a deposit function that only sends money if the user we send too has a balance less than us~\cite{guardcheck}. 
 
+This pattern can be used to validate user inputs, check the contract state before executing any logic aswell as invariants in the code and rule out any conditions that should not be possible. Triggering exceptions in Solidity is done by using either the revert(), require() or assert() functions. 
+
+Solidity documentation recommends require() to ensure valid conditions such as inputs, state variables or to validate return values from calls to external contracts ~\cite{solidity}. This should be implemented towards the beginning of the function as a way to validate. 
+
+Assert() is used to test for internal errors and to check invariants and is used towards the end of a function. Both these functions will evaluate the parameters and throw an exception only if it evaluates to false. 
+
+Revert() function always throws an exception and is used in different scenarios such as if-else trees. We show an example of the guards in Listing~\ref{lst:guard}, where we made a deposit function that only sends money if the user we send too has a balance less than us~\cite{guardcheck}.
 
 \begin{lstlisting}[language=Solidity, caption=Guard Check pattern, label={lst:guard}]
 contract GuardCheck {
@@ -331,7 +354,10 @@ contract GuardCheck {
 \end{lstlisting}
 
 \subsubsection{Mutex}
-Another way of protecting the state of a contract is by adding a mutex. This will be especially handy with dealing with cross-function reentrancy attacks. The concept will be to protect pieces of code where shared resources are accessed. To utilize these resources the mutex will first need to be unlocked as it will only be possible for the resource to be changed by one process or function at a time. A simple implementation of utilizing a mutex is given in code sample below ~\ref{lst:mutex}. The mutex variable makes exploit of a recursive call impossible and also avoids a cross-function reentrancy attack. Note that it is important to ensure a way for a lock to be released as a contract without release of its lock can be rendered inert. 
+
+Another way of protecting the state of a contract is by adding a mutex, which is especially useful when dealing with cross-function reentrancy attacks. The concept is to protect pieces of code where shared resources are accessed. To utilize these resources the mutex will first need to be unlocked as it will only be possible for the resource to be changed by one process or function at a time. 
+
+We show an example of mutex in Listing~\ref{lst:mutex}. The mutex stops the exploit of recursive calls and avoids a cross-function reentrancy attack. Note that it is important to ensure a way for a lock to be released as a contract without the release of its lock can be rendered inert.
 
 \begin{lstlisting}[language=Solidity, caption=Mutual exclusion, label={lst:mutex}]
 
@@ -358,10 +384,11 @@ contract Mutex {
     lock = false;
 }
 \end{lstlisting}
+
 \subsection{The DAO attack}
-The most well known real-world example of such a reentrancy attack was 'The DAO Hack'. We will briefly discuss this attack as it shows the significance and importance of preventing reentrancy attacks.
-\subsubsection{The DAO}
- DAO stands for "Decentralized Autonomous Organization". In other words, the organization is not run by any institution but instead will run automatically based on pre-defined smart contracts. All transactions and rules are thus encoded on the blockchain. The purpose of The DAO was to be a governance model for crowd investments. All members would send a certain amount of Ether to the DAO after which members of the DAO could make proposals for investments and then vote on those proposals. Other interesting realized concepts of DAOs are Constitution DAO \cite{constitution}, an organisation that tried to purchase an original copy of the US constitution, CityDAO, a project that is trying to create entirely new cities from scratch, governed by a DAO~\cite{citydao}~\cite{cryptocities} and KlimaDAO, where the collective has the goal of accelerating price appreciation of carbon assets and earns rewards based on climate action~\cite{klimadao}. 
+The most well known real-world example of a reentrancy attack was 'The DAO Hack'. We will briefly discuss this attack as it shows the significance and importance of preventing reentrancy attacks.
+\subsubsection{DAO}
+ It stands for "Decentralized Autonomous Organization". In other words, the organization is not run by any institution but instead will run automatically based on pre-defined smart contracts. All transactions and rules are thus encoded on the blockchain. The purpose of The DAO was to be a governance model for crowd investments. All members would send a certain amount of Ether to the DAO after which members of the DAO could make proposals for investments and then vote on those proposals. Other interesting realized concepts of DAOs are Constitution DAO \cite{constitution}, an organisation that tried to purchase an original copy of the US constitution, CityDAO, a project that is trying to create entirely new cities from scratch, governed by a DAO~\cite{citydao}~\cite{cryptocities} and KlimaDAO, where the collective has the goal of accelerating price appreciation of carbon assets and earns rewards based on climate action~\cite{klimadao}. 
  An important part of the governance model of The DAO was the split functionality in which it was possible for users to create a proposal to split from the DAO where the user takes their stake from the contract and splits from the DAO into a child DAO thus leaving The DAO and burning their ownership of the current one. After a fixed period of time, it was possible to then retrieve your Ether from that child DAO. 
  
 \subsubsection{The attack}
@@ -634,7 +661,7 @@ Table~\ref{tab:send} show the Ether exchange and guard methods considering only 
 \subsection{Contracts with a Reentrancy vulnerability}
 As a last analysis we will take a look at reentrancy vulnerabilities in contracts that contain a call function. The tool slither~\cite{slither} will be used to complete this task and detect the reentrancies in these contracts.
 A total of 1,190 reentrancy vulnerabilities were found in a total of 13,443 contracts that contained a call function. In table~\ref{tab:re-loc} we can see that even a contract of only 11 lines of code can contain a reentrancy vulnerability. We have an average of 0.19 reentrancy vulnerabilities per contract when looking at the collection of contracts with this call functionality. A contract called 
- \textit{PostExperiationIdentifierTransformationFinancialProductLibrary}\footnote{\url{https://etherscan.io/address/0xAb955711ECd766Ce70dc2DbF2D9e0E8e4b431232#code}} even contained 38 reentrancy vulnerabilties. The reentrancy vulnerability is thus still prevalent in contracts using a call value function up until this day. 
+ \textit{PostExperiationIdentifierTransformationFinancialProductLibrary}\footnote{\url{https://etherscan.io/address/0xAb955711ECd766Ce70dc2DbF2D9e0E8e4b431232\#code}} even contained 38 reentrancy vulnerabilties. The reentrancy vulnerability is thus still prevalent in contracts using a call value function up until this day. 
 
 \begin{table}
 \center
