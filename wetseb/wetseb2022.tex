@@ -48,6 +48,12 @@
 \usepackage{listings}
 \usepackage{xcolor}
 
+\usepackage{todonotes} %[disable]
+\newcommand{\reviewer}[1]{\todo[color=orange!40, inline]{\footnotesize{Reviewer: #1 }}}
+\newcommand{\henrique}[1]{\todo[color=blue!40, inline]{\footnotesize{Henrique: #1 }}}
+\newcommand{\darin}[1]{\todo[color=green!40, inline]{\footnotesize{Darin: #1}}}
+
+
 \newcommand{\totalContracts}{26,799\xspace}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -107,31 +113,18 @@
 % Double blind Workshop - No author information in this version
 
 
-%\author{
-%\IEEEauthorblockN{Darin Verheijke}
-%\IEEEauthorblockA{\textit{Department of Computer Science} \\
-%\textit{University of Antwerp}\\
-%Antwerp, Belgium \\
-%darin.verheijke@student.uantwerpen.be}
-%\and
-%\IEEEauthorblockN{Henrique Rocha}
-%\IEEEauthorblockA{\textit{Department of Computer Science} \\
-%\textit{Loyola University Maryland}\\
-%Baltimore, USA \\
-%henrique.rocha@gmail.com}
-%}
 \author{
-\IEEEauthorblockN{Placeholder 1st Author}
-\IEEEauthorblockA{\textit{Department 1} \\
-\textit{Affiliation 1}\\
-City, Country \\
-author1@email.com}
+\IEEEauthorblockN{Darin Verheijke}
+\IEEEauthorblockA{\textit{Department of Computer Science} \\
+\textit{University of Antwerp}\\
+Antwerp, Belgium \\
+darin.verheijke@student.uantwerpen.be}
 \and
-\IEEEauthorblockN{Placeholder 2nd Author}
-\IEEEauthorblockA{\textit{Department 2} \\
-\textit{Affiliation 2}\\
-City,  Country \\
-author2@email.com}
+\IEEEauthorblockN{Henrique Rocha}
+\IEEEauthorblockA{\textit{Department of Computer Science} \\
+\textit{Loyola University Maryland}\\
+Baltimore, USA \\
+henrique.rocha@gmail.com}
 }
 
 
@@ -142,6 +135,8 @@ author2@email.com}
 %% article.
 \begin{abstract}
 Ethereum is a blockchain platform that enables the use of smart contracts. Smart contracts will execute a set of instructions without an intermediary party when called upon. The possibility to make calls to another contract or exchange cryptocurrency allows for potential exploits to occur, most notable reentrancy. The Solidity language for coding smart contracts has syntactic constructs created to be safer alternatives, and guards to aid in securing code against exploits. In this paper, we collect a total of \totalContracts verified Solidity smart contracts from Etherscan, to analyze the language constructs used in calling another contract or exchanging ether. We also analyze the usage of guards to make the code more secure. For instance, even though call is the unsafest function, it is still used by 50\% of the contracts in our dataset. The safe method transfer is used by approximately one-third of contracts, and send is rarely used. 
+
+
 
 %In this paper we will discuss and look at how one of these exploits, called the reentrancy attack, is possible. This attack is most well known for The DAO attack in 2016 where almost 55 million dollar got drained by an attacker who made use of this vulnerability in the smart contract. More specifically we will look at the concept in the Solidity programming language which was made specifically for the Ethereum blockchain. Also an overview of the different advantages and disadvantages of the different functions to exchange Ether, the currency used to execute transactions, will be given, how they work and how the call function might allow for certain exploits. The reentrancy vulnerability is still prevalent in smart contracts nowadays and forms a huge threat to applications and their users due to the huge possible financial losses that can happen. This research also includes an analysis of a verified smart contract database that was collected from Etherscan. This was done to detect potential vulnerabilities by looking for the presence of functions that allow for these attacks. Finally, the results of this analysis are discussed and there will be a brief discussion about prevention measures and methods to avoid a reentrancy attack.
 \end{abstract}
@@ -354,7 +349,7 @@ Figure~\ref{fig:minor-versions} shows the top-10 solidity versions (major and mi
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{wetseb/img/clean_versions_final.png}
+  \includegraphics[width=\linewidth]{./img/clean_versions_final.png}
   \caption{Top-10 Solidity versions in the database.}
   %\description{Solidity Compiler Version}
   \label{fig:minor-versions}
@@ -404,7 +399,7 @@ Figure~\ref{fig:call_version} shows the Solidity versions for contracts with cal
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{wetseb/img/call_clean_final.png}
+  \includegraphics[width=\linewidth]{./img/call_clean_final.png}
   \caption{Top-10 Solidity versions on Contracts using Call. }
   %\description{Solidity Compiler Version}
   \label{fig:call_version}
@@ -451,7 +446,7 @@ Figure~\ref{fig:transfer_version} shows the solidity versions for contracts that
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{wetseb/img/transfers_clean_final.png}
+  \includegraphics[width=\linewidth]{./img/transfers_clean_final.png}
   \caption{Top-10 Solidity versions on Contracts using Transfer.}
   %\description{Solidity Compiler Version (Sends)}
   \label{fig:transfer_version}
