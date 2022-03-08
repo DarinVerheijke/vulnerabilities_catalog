@@ -141,13 +141,13 @@ author2@email.com}
 %% The abstract is a short summary of the work to be presented in the
 %% article.
 \begin{abstract}
-Ethereum is a blockchain platform that enables the use of smart contracts. Smart contracts will execute a set of instructions without an intermediary party when called upon. The possibility to make calls to another contract or exchange cryptocurrency allows for potential exploits to occur, most notable reentrancy. The Solidity language for coding smart contracts has syntactic constructs created to be safer alternatives, and guards to aid in securing code against exploits. In this paper, we collect a total of \totalContracts verified Solidity smart contracts from Etherscan, to analyze the language constructs used in calling another contract or exchanging ether. We also analyze the usage of guards to make the code more secure. For instance, even though call is the unsafest function, it is still used by 50\% of the contracts in our dataset. The safe method transfer is used by approximately one-third of contracts, and send is rarely used.
+Ethereum is a blockchain platform that enables the use of smart contracts. Smart contracts will execute a set of instructions without an intermediary party when called upon. The possibility to make calls to another contract or exchange cryptocurrency allows for potential exploits to occur, most notable reentrancy. The Solidity language for coding smart contracts has syntactic constructs created to be safer alternatives, and guards to aid in securing code against exploits. In this paper, we collect a total of \totalContracts verified Solidity smart contracts from Etherscan, to analyze the language constructs used in calling another contract or exchanging ether. We also analyze the usage of guards to make the code more secure. For instance, even though call is the unsafest function, it is still used by 50\% of the contracts in our dataset. The safe method transfer is used by approximately one-third of contracts, and send is rarely used. 
 
 %In this paper we will discuss and look at how one of these exploits, called the reentrancy attack, is possible. This attack is most well known for The DAO attack in 2016 where almost 55 million dollar got drained by an attacker who made use of this vulnerability in the smart contract. More specifically we will look at the concept in the Solidity programming language which was made specifically for the Ethereum blockchain. Also an overview of the different advantages and disadvantages of the different functions to exchange Ether, the currency used to execute transactions, will be given, how they work and how the call function might allow for certain exploits. The reentrancy vulnerability is still prevalent in smart contracts nowadays and forms a huge threat to applications and their users due to the huge possible financial losses that can happen. This research also includes an analysis of a verified smart contract database that was collected from Etherscan. This was done to detect potential vulnerabilities by looking for the presence of functions that allow for these attacks. Finally, the results of this analysis are discussed and there will be a brief discussion about prevention measures and methods to avoid a reentrancy attack.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Smart Contracts, Solidity,  Call,  Transfer,  Guards.
+Smart Contracts, Solidity,  Call,  Blockchain,  Guards.
 \end{IEEEkeywords}
 
 
@@ -296,7 +296,7 @@ Table~\ref{tab:loc} shows the general statistics considering the lines of code o
 
 \begin{table}
 \center
-  \caption{Lines of Code (LoC)}
+  \caption{Lines of Code (SLoC)}
   \label{tab:loc}
   \begin{tabular}{c c c c c}
     \hline
@@ -313,16 +313,16 @@ Now, we investigate how many Ether exchange methods and guards are being used in
 \center
   \caption{Ether Exchange and Guards Usage}
   \label{tab:results-all}
-  \begin{tabular}{crrr}
+  \begin{tabular}{crrrr}
     \hline
-    Method & Contracts & Count & Average \\
+    Method & Contracts & Count & Average & Median \\
     \hline
-    Call & 13,443 (50\%) & 32,236 & 2.3 \\
-    Transfer & 9,176 (34\%) & 17,814 & 1.9 \\
-    Send & 647 (02\%) & 1,059& 1.6 \\
-    Require & 26,190 (97\%) & 622,679 & 23.7 \\
-    Assert & 7,279 (27\%) & 10,507 & 1.4 \\
-    Revert & 13,819 (51\%) & 41,502 & 3.0\\
+    Call & 13,443 (50\%) & 32,236 & 2.3 & 1.0\\
+    Transfer & 9,176 (34\%) & 17,814 & 1.9 & 0\\
+    Send & 647 (02\%) & 1,059& 1.6 & 0\\
+    Require & 26,190 (97\%) & 622,679 & 23.7 & 18.0 \\
+    Assert & 7,279 (27\%) & 10,507 & 1.4 & 0\\
+    Revert & 13,819 (51\%) & 41,502 & 3.0 & 1.0\\
     \hline
 \end{tabular}
 \end{table}
@@ -337,7 +337,7 @@ Table~\ref{tab:major-versions} shows the contracts categorized by their major So
 \center
   \caption{Solidity Major Versions}
   \label{tab:major-versions}
-  \begin{tabular}{crrr}
+  \begin{tabular}{crrrr}
     \hline
     Version & Contracts & Average LoC & Median LoC \\
     \hline
@@ -354,7 +354,7 @@ Figure~\ref{fig:minor-versions} shows the top-10 solidity versions (major and mi
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{img/versions_clean.png}
+  \includegraphics[width=\linewidth]{wetseb/img/clean_versions_final.png}
   \caption{Top-10 Solidity versions in the database.}
   %\description{Solidity Compiler Version}
   \label{fig:minor-versions}
@@ -404,7 +404,7 @@ Figure~\ref{fig:call_version} shows the Solidity versions for contracts with cal
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{img/call_clean_v2.png}
+  \includegraphics[width=\linewidth]{wetseb/img/call_clean_final.png}
   \caption{Top-10 Solidity versions on Contracts using Call. }
   %\description{Solidity Compiler Version}
   \label{fig:call_version}
@@ -416,15 +416,15 @@ Table~\ref{tab:call} show the Ether exchange and guard methods considering only 
 \center
   \caption{Solidity Methods of Contracts using Call}
   \label{tab:call}
-  \begin{tabular}{crrr}
+  \begin{tabular}{crrrr}
     \hline
-    Method & Contracts & Count & Average\\
+    Method & Contracts & Count & Average & Median\\
     \hline
-    Transfer & 4,514 (33\%) & 8,789 & 0.65\\
-    Send &582 (04\%) & 920 & 0.07\\
-    Require &13,392 (99\%) & 456,461 & 33.96 \\
-    Assert & 5,348 (39\%) & 6,701 & 0.49\\
-    Revert & 11,976 (89\%) & 38,273 & 2.84\\
+    Transfer & 4,514 (33\%) & 8,789 & 0.65 & 0\\
+    Send &582 (04\%) & 920 & 0.07 & 2.0\\
+    Require &13,392 (99\%) & 456,461 & 33.96 & 31.0 \\
+    Assert & 5,348 (39\%) & 6,701 & 0.49 & 0.0\\
+    Revert & 11,976 (89\%) & 38,273 & 2.84 & 2.0\\
 \end{tabular}
 \end{table}
 
@@ -451,7 +451,7 @@ Figure~\ref{fig:transfer_version} shows the solidity versions for contracts that
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{img/send_versions_clean.png}
+  \includegraphics[width=\linewidth]{wetseb/img/transfers_clean_final.png}
   \caption{Top-10 Solidity versions on Contracts using Transfer.}
   %\description{Solidity Compiler Version (Sends)}
   \label{fig:transfer_version}
@@ -461,15 +461,15 @@ Figure~\ref{fig:transfer_version} shows the solidity versions for contracts that
 \center
   \caption{Solidity Methods of Contracts using Transfer}
   \label{tab:transfer}
-  \begin{tabular}{crrr}
+  \begin{tabular}{crrrr}
     \hline
-    Methods & Contracts & Count & Average \\
+    Methods & Contracts & Count & Average & Median \\
     \hline
-    Call & 4,514 (49\%) & 11,083 & 1.20\\
-    Send &107 (01\%) & 251 & 0.03\\
-    Require & 9,060 (98\%) &256,835 & 27.99\\
-    Assert & 2,722 (29\%) & 4,789 & 0.52\\
-    Revert & 4,876 (53\%) & 14,493 & 1.57 \\
+    Call & 4,514 (49\%) & 11,083 & 1.20 & 0\\
+    Send &107 (01\%) & 251 & 0.03 & 0\\
+    Require & 9,060 (98\%) &256,835 & 27.99 & 23.0\\
+    Assert & 2,722 (29\%) & 4,789 & 0.52 & 0\\
+    Revert & 4,876 (53\%) & 14,493 & 1.57 & 1.0\\
     \hline
 \end{tabular}
 \end{table}
@@ -513,15 +513,15 @@ Table~\ref{tab:send} show the Ether exchange and guard methods considering only 
 \center
   \caption{Solidity Methods of Contracts using Send}
   \label{tab:send}
-  \begin{tabular}{crrr}
+  \begin{tabular}{crrrr}
     \hline
     Method & Contracts & Count & Average \\
     \hline
-    Call& 582 (89\%) & 1,203 & 1.86\\
-    Transfer& 107 (16\%) & 234 & 0.36\\
-    Require& 647 (100\%) & 25,058 & 38.73\\
-    Assert& 63 (09\%) & 166 & 0.26\\
-    Revert& 588 (90\%) & 2304 & 3.56\\
+    Call& 582 (89\%) & 1,203 & 1.86 & 2.0\\
+    Transfer& 107 (16\%) & 234 & 0.36 & 0\\
+    Require& 647 (100\%) & 25,058 & 38.73 & 37.0\\
+    Assert& 63 (09\%) & 166 & 0.26 & 0\\
+    Revert& 588 (90\%) & 2304 & 3.56 & 4.0\\
     \hline
 \end{tabular}
 \end{table}
