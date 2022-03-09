@@ -219,7 +219,7 @@ The send function can be seen as a lower-level implementation of transfer. Simil
 Guards are language constructs to prevent access or revert a transaction. In Solidity, \textit{Require} and \textit{Assert} have been introduced to the language in the version 0.4.10 (May 2017); \textit{Revert} was introduced in version 0.4.12 (Ago 2017).
 
 Both {require} and {assert}, check for a condition and raise an exception if such condition is not met. Any exception in a smart contract execution will cancel the transaction. Assert is supposed to be a check for internal errors and bugs. Assert will consume all remaining gas. On the other hand, require intent is to be used as much as possible for developers to check for conditions. Require refunds remaining gas if it raises an exception.
-%
+
 Revert raises an exception while refunding the remaining gas. It is similar to a "throws new Exception()" in Java.
 
 Those three methods (assert, require, and revert) are guards to stop a transaction and prevent possible exploits in a smart contract. The usage of these constructs may indicate that developers are concerned with the security of the contract.
@@ -228,7 +228,7 @@ Those three methods (assert, require, and revert) are guards to stop a transacti
 
 The call function has some vulnerabilities. Every call to another contract transfers execution control to the called contract. Untrusted contracts may introduce and execute malicious code or exploit vulnerabilities. One of these major vulnerabilities is called the reentrancy attack, which takes advantage of the transfer of execution control by making recursive calls back to the original contract, repeating executions, and creating new transactions.
 
-The two main types of reentrancy attacks are single function and cross-function: Single function, and Cross-function.
+The two main types of reentrancy attacks are Single function, and Cross-function.
 
 \subsubsection{Single function reentrancy attack}
 This version repeatedly calls the involved function before the first invocation of the function is finished.  Listing~\ref{lst:reentrancy1} shows a code snipped with this exploit.
@@ -237,14 +237,14 @@ This version repeatedly calls the involved function before the first invocation 
 mapping (address => uint) private userBalances;
 
 function withdrawBalance() public {
-    uint amountToWithdraw = userBalances[msg.sender];
-    (bool succes, ) = msg.sender.call.value(amountToWithdraw)("");
-    require(success);
-    userBalances[msg.sender] = 0;
-    }
+  uint amountToWithdraw = userBalances[msg.sender];
+  (bool succes, ) = msg.sender.call.value(amountToWithdraw)("");
+  require(success);
+  userBalances[msg.sender] = 0;
+}
 // Fallback function which gets executed
 function () public payable {
-    withdrawBalance()
+  withdrawBalance()
 }
 \end{lstlisting}
 
@@ -257,16 +257,16 @@ When a function shares a state with another function there is a possibility of a
 mapping (address => uint) private userBalances;
 
 function transfer(address to, uint amount) {
-    if (userBalances[msg.sender] >= amount) {
-        userBalances[to] += amount;
-        userBalances[msg.sender] -= amount;
-        }
-    }
+  if(userBalances[msg.sender] >= amount) {
+     userBalances[to] += amount;
+     userBalances[msg.sender] -= amount;
+  }
+}
 function withdrawBalance() public {
-    uint amountToWithdraw = userBalances[msg.sender];
-    (bool succes, ) = msg.sender.call.value(amountToWithdraw)("");
-    require(success);
-    userBalances[msg.sender] = 0;
+  uint amountToWithdraw = userBalances[msg.sender];
+  (bool succes, ) = msg.sender.call.value(amountToWithdraw)("");
+  require(success);
+  userBalances[msg.sender] = 0;
 }
 
 \end{lstlisting}
@@ -308,7 +308,7 @@ Table~\ref{tab:loc} shows the general statistics considering the lines of code o
 
 \begin{table}
 \center
-  \caption{Source Lines of Code (SLoC)}
+  \caption{Source Lines of Code (LoC)}
   \label{tab:loc}
   \begin{tabular}{c c c c c}
     \hline
