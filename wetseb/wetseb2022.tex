@@ -320,9 +320,9 @@ Table~\ref{tab:loc} shows the general statistics considering the lines of code o
 \end{table}
 
 \reviewer{Table II: even if it'd be trivial, please could you add a short note/text about which LOC did you consider (SLOC or all the LOCs, included potential comments?) or better specify the acronym (e.g. SLOC and not LOC)?} 
-\henrique{I added a footnote but if we change to SLoc it needs to change in ENTIRE paper and not just this table. }
+\henrique{I added a footnote which should suffice.  Otherwise we will need to change to SLoc in the ENTIRE paper and not just this table.  That is too much effort for a minor thing.}
 
-Now, we investigate how many Ether exchange methods and guards are being used in the contracts. Table~\ref{tab:results-all} shows how many contracts in our dataset have at least one of the methods, the overall count of the method, and the average and median number in the contracts that have at least one.  Even though call is the unsafest method for Ether exchange, it is used by 50\% of the contracts in the dataset. On average, there are 2.3 call uses on the contracts. Any contract using call has the potential to have a reentrancy vulnerability. On the other hand, send is a safer method and it is the least used (2\%). Transfer is the safest method, and it is used by roughly one-third of contracts.
+Now, we investigate how many Ether exchange methods and guards are being used in the contracts. Table~\ref{tab:results-all} shows how many contracts in our dataset have at least one of the methods, the overall count of the method, and the average and median number in all contracts. Even though call is the unsafest method for Ether exchange, it is used by 50\% of the contracts in the dataset. On average, there are 1.2 call uses on the contracts. Any contract using call has the potential to have a reentrancy vulnerability.  On the other hand, send is a safer method and it is the least used (2\%). Transfer is the safest method, and it is used by roughly one-third of contracts. 
 
 \begin{table}
 \center
@@ -332,19 +332,17 @@ Now, we investigate how many Ether exchange methods and guards are being used in
     \hline
     Method & Contracts & Count & Average & Median \\
     \hline
-    Call & 13,443 (50\%) & 32,236 & 2.3 & 1.0\\
-    Transfer & 9,176 (34\%) & 17,814 & 1.9 & 0\\
-    Send & 647 (02\%) & 1,059& 1.6 & 0\\
-    Require & 26,190 (97\%) & 622,679 & 23.7 & 18.0 \\
-    Assert & 7,279 (27\%) & 10,507 & 1.4 & 0\\
-    Revert & 13,819 (51\%) & 41,502 & 3.0 & 1.0\\
+    Call & 13,443 (50\%) & 32,236 & 1.20 & 1\\
+    Transfer & 9,176 (34\%) & 17,814 & 0.66 & 0\\
+    Send & 647 (02\%) & 1,059& 0.04 & 0\\
+    Require & 26,190 (97\%) & 622,679 & 23.24 & 18 \\
+    Assert & 7,279 (27\%) & 10,507 & 0.39 & 0\\
+    Revert & 13,819 (51\%) & 41,502 & 1.55 & 1\\
     \hline
 \end{tabular}
 \end{table}
 
-\henrique{Median values are incorrect. You are taking the median over all contracts. You should take the median only if the contract has at least one of the method. }
-
-On the guard methods shown in Table~\ref{tab:results-all}, require is used by the great majority of all contracts (97\%). On average, there are 23.7 uses of require in the contracts. The great usage of this guard may be to counteract the vulnerabilities of call. Revert is also commonly used by more than half of the contracts in our dataset. Finally, Assert is the least used guard in our analysis.
+On the guard methods shown in Table~\ref{tab:results-all}, require is used by the great majority of all contracts (97\%). On average, there are 23.24 uses of require in the contracts. The great usage of this guard may be to counteract the vulnerabilities of call. Revert is also commonly used by more than half of the contracts in our dataset. Finally, Assert is the least used guard in our analysis.
 
 \subsection{Contracts by Version}
 
@@ -378,6 +376,7 @@ Figure~\ref{fig:minor-versions} shows the top-10 solidity versions (major and mi
 \end{figure}
 
 \reviewer{Fig1/2/3: could you add the labels for the X and Y axis (missing)?}
+\henrique{Done by Darin.}
 
 \begin{table}
 \center
@@ -440,10 +439,10 @@ Table~\ref{tab:call} show the Ether exchange and guard methods considering only 
     Method & Contracts & Count & Average & Median\\
     \hline
     Transfer & 4,514 (33\%) & 8,789 & 0.65 & 0\\
-    Send &582 (04\%) & 920 & 0.07 & 2.0\\
-    Require &13,392 (99\%) & 456,461 & 33.96 & 31.0 \\
-    Assert & 5,348 (39\%) & 6,701 & 0.49 & 0.0\\
-    Revert & 11,976 (89\%) & 38,273 & 2.84 & 2.0\\
+    Send &582 (04\%) & 920 & 0.07 & 2\\
+    Require &13,392 (99\%) & 456,461 & 33.96 & 31 \\
+    Assert & 5,348 (39\%) & 6,701 & 0.49 & 0\\
+    Revert & 11,976 (89\%) & 38,273 & 2.84 & 2\\
 \end{tabular}
 \end{table}
 
@@ -486,9 +485,9 @@ Figure~\ref{fig:transfer_version} shows the solidity versions for contracts that
     \hline
     Call & 4,514 (49\%) & 11,083 & 1.20 & 0\\
     Send &107 (01\%) & 251 & 0.03 & 0\\
-    Require & 9,060 (98\%) &256,835 & 27.99 & 23.0\\
+    Require & 9,060 (98\%) &256,835 & 27.99 & 23\\
     Assert & 2,722 (29\%) & 4,789 & 0.52 & 0\\
-    Revert & 4,876 (53\%) & 14,493 & 1.57 & 1.0\\
+    Revert & 4,876 (53\%) & 14,493 & 1.57 & 1\\
     \hline
 \end{tabular}
 \end{table}
@@ -534,13 +533,13 @@ Table~\ref{tab:send} show the Ether exchange and guard methods considering only 
   \label{tab:send}
   \begin{tabular}{crrrr}
     \hline
-    Method & Contracts & Count & Average \\
+    Method & Contracts & Count & Average & Median \\
     \hline
-    Call& 582 (89\%) & 1,203 & 1.86 & 2.0\\
+    Call& 582 (89\%) & 1,203 & 1.86 & 2\\
     Transfer& 107 (16\%) & 234 & 0.36 & 0\\
-    Require& 647 (100\%) & 25,058 & 38.73 & 37.0\\
+    Require& 647 (100\%) & 25,058 & 38.73 & 37\\
     Assert& 63 (09\%) & 166 & 0.26 & 0\\
-    Revert& 588 (90\%) & 2304 & 3.56 & 4.0\\
+    Revert& 588 (90\%) & 2304 & 3.56 & 4\\
     \hline
 \end{tabular}
 \end{table}
