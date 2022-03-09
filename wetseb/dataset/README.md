@@ -1,4 +1,4 @@
-# Dataset
+# Dataset Paper Wetseb 2022
 
 This is the dataset we used on the paper "An Exploratory Study on Solidity Guards and Ether Exchange Constructs", presented at [WETSEB 2022](https://www.agile-group.org/wetseb2022/).
 
