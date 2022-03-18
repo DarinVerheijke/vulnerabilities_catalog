@@ -203,14 +203,7 @@ Solidity~\cite{solidity} is one of the main languages to code smart contracts in
 
 We like to highlight the language constructs used to exchange cryptocurrency among contracts: call, send, and transfer (Table~\ref{tab:freq}).
 
-The call function is a low-level interface for sending a message to a contract and it is also a way to send Ether to another address. The call function transfers the execution control to the called contract and the caller can forward any amount of gas. Therefore, the call function has the potential to introduce vulnerabilities, most notably reentrancy.
-
-The transfer method was first introduced in version 0.4.10 (May 2017) of the Solidity language. It provides a safe-by-design method to transfer cryptocurrency. Even though this method also transfers the execution control to the caller, it has a gas limit that prevents abuse. If the transfer fails, an exception is raised, which also adds to the security of this method as the exception reverts the transaction. Due to automatically reverting in case of errors, the transfer function is recommended in most cases.
-
-The send function can be seen as a lower-level implementation of transfer. Similar to transfer, it provides a safe-by-design function to transfer cryptocurrency, with a gas limit to prevent exploits. The major difference between send and transfer, is that send returns false if it fails, delegating the error handling to the developer.
-
-
-\begin{table}
+\begin{table}[h]
 \center
   \caption{Solidity Functions to Exchange Ether}
   \label{tab:freq}
@@ -225,12 +218,19 @@ The send function can be seen as a lower-level implementation of transfer. Simil
 \end{tabular}
 \end{table}
 
+The call function is a low-level interface for sending a message to a contract and it is also a way to send Ether to another address. The call function transfers the execution control to the called contract and the caller can forward any amount of gas. Therefore, the call function has the potential to introduce vulnerabilities, most notably reentrancy.
+
+The transfer method was first introduced in version 0.4.10 (May 2017) of the Solidity language. It provides a safe-by-design method to transfer cryptocurrency. Even though this method also transfers the execution control to the caller, it has a gas limit that prevents abuse. If the transfer fails, an exception is raised, which also adds to the security of this method as the exception reverts the transaction. Due to automatically reverting in case of errors, the transfer function is recommended in most cases.
+
+The send function can be seen as a lower-level implementation of transfer. Similar to transfer, it provides a safe-by-design function to transfer cryptocurrency, with a gas limit to prevent exploits. The major difference between send and transfer, is that send returns false if it fails, delegating the error handling to the developer.
+
+
 \subsubsection{Solidity Guards}
 
 Guards are language constructs to prevent access or revert a transaction. In Solidity, \textit{Require} and \textit{Assert} have been introduced to the language in the version 0.4.10 (May 2017); \textit{Revert} was introduced in version 0.4.12 (Ago 2017).
 
 Both {require} and {assert}, check for a condition and raise an exception if such condition is not met. Any exception in a smart contract execution will cancel the transaction. Assert is supposed to be a check for internal errors and bugs. Assert will consume all remaining gas. On the other hand, require intent is to be used as much as possible for developers to check for conditions. Require refunds remaining gas if it raises an exception.
-%
+
 Revert raises an exception while refunding the remaining gas. It is similar to a "throws new Exception()" in Java.
 
 Those three methods (assert, require, and revert) are guards to stop a transaction and prevent possible exploits in a smart contract. The usage of these constructs may indicate that developers are concerned with the security of the contract.
@@ -397,7 +397,7 @@ More recent examples of reentrancy attacks are the uniswap/lendf.me hacks where 
 
 We collected verified smart contracts from Etherscan\footnote{\url{etherscan.io/contractsVerified}} which is a block explorer and analytic platform for Ethereum. Etherscan verified contracts allows the public to audit and read contracts as it has to be made publicly available to be granted the verified status. Etherscan does not give access to a complete dataset of verified smart contracts but rather has an open-source database of the latest 10,000-5,000 smart contracts that were verified. Therefore, we gathered the latest contracts from time to time, over a period of six months (2021-07-07 to 2022-01-06) to build our dataset.
 
-Then, we did the following pre-processing steps in our dataset: (i) remove all duplicated\footnote{We removed contracts with the same address in the Ethereum blockchain. We did not verify whether the contracts with the same name have the same source code. Since these contracts have different addresses, they are considered separate entities in the blockchain platform.} contracts; (ii) remove contracts not written in Solidity; (iii) removed contracts which we could not process using cloc.\footnote{cloc is a tool to count lines of code available at <\url{https://github.com/AlDanial/cloc}>.} After removing those contracts, we had a total of \totalContracts unique verified solidity smart contracts. This dataset is publicly available.\footnote{\url{https://bit.ly/3fyOgBD}, the link has been properly anonymized for the reviewers to download the dataset spreadsheet with the name and address of the contracts and not break the double-blind review process.}
+Then, we did the following pre-processing steps in our dataset: (i) remove all duplicated\footnote{We removed contracts with the same address in the Ethereum blockchain. We did not verify whether the contracts with the same name have the same source code. Since these contracts have different addresses, they are considered separate entities in the blockchain platform.} contracts; (ii) remove contracts not written in Solidity; (iii) removed contracts which we could not process using cloc.\footnote{cloc is a tool to count lines of code available at <\url{https://github.com/AlDanial/cloc}>.} After removing those contracts, we had a total of \totalContracts unique verified solidity smart contracts. This dataset is publicly available.\footnote{\url{https://github.com/DarinVerheijke/vulnerabilities_catalog/tree/main/wetseb/dataset}}
 
 
 \subsection{Method}
@@ -410,7 +410,8 @@ https://api.etherscan.io/api?module=contract
 &apikey=YourApiKeyToken // Your API key
 \end{lstlisting}
 
-Then, we used the cloc tool on the contracts to discover how many lines of code are in each one. We removed from this study the contracts that cloc were not able to process. Moreover, we used a Python script on the contracts to locate specific methods used in the contracts related to Ether exchange functions (call, send, and transfer) and guards (require, assert, revert).
+Then, we used the cloc tool on the contracts to discover how many lines of code are in each one. We removed from this study the contracts that cloc were not able to process. Moreover, we used a Python script on the contracts to locate specific methods used in the contracts related to Ether exchange functions (call, send, and transfer) and guards (require, assert, revert). We also used the tool slither\footnote{\url{https://github.com/crytic/slither}}~\cite{slither} to detect reentrancy vulnerabilities on the contracts.
+
 
 \section{Analysis and Results}\label{sec:results}
 
@@ -652,6 +653,7 @@ Table~\ref{tab:send} show the Ether exchange and guard methods considering only 
 \end{table}
 
 \subsection{Contracts with a Reentrancy vulnerability}
+
 As a last analysis we will take a look at reentrancy vulnerabilities in contracts that contain a call function. The tool slither~\cite{slither} will be used to complete this task and detect the reentrancies in these contracts.
 A total of 1,190 reentrancy vulnerabilities were found in a total of 13,443 contracts that contained a call function. In table~\ref{tab:re-loc} we can see that even a contract of only 11 lines of code can contain a reentrancy vulnerability. We have an average of 0.19 reentrancy vulnerabilities per contract when looking at the collection of contracts with this call functionality. A contract called 
  \textit{PostExperiationIdentifierTransformationFinancialProductLibrary}\footnote{\url{https://etherscan.io/address/0xAb955711ECd766Ce70dc2DbF2D9e0E8e4b431232\#code}} even contained 38 reentrancy vulnerabilties. The reentrancy vulnerability is thus still prevalent in contracts using a call value function up until this day. Out of the contracts without a call function only 231 had a reentrancy vulnerability which was significantly less then the contracts with a call function, on average we had about 0.05 reentrancy vulnerabilities per contract that did not contain a call function. 
