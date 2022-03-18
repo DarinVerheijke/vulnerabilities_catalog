@@ -199,7 +199,7 @@ Executing any operation in Ethereum requires Gas. Gas is a resource to measure t
 
 Solidity~\cite{solidity} is one of the main languages to code smart contracts in the Ethereum platform. Solidity is an object-oriented, high-level language that has syntax comparable to C++.
 
-\subsubsection{Solidity Ether Exchange}
+\subsubsection{Solidity Ether Exchange}\label{sec:sol-ether-exchange}
 
 We like to highlight the language constructs used to exchange cryptocurrency among contracts: call, send, and transfer (Table~\ref{tab:freq}).
 
@@ -561,6 +561,36 @@ Table~\ref{tab:call} show the Ether exchange and guard methods considering only 
 \end{tabular}
 \end{table}
 
+\textbf{Reentrancy.} As we explained before, the call function is the unsafest construct for ether exchange, and it may leave the contract vulnerable to reentrancy. Therefore, we decided to use the tool slither~\cite{slither} for detecting possible reentrancies in contracts that use call. 
+
+We found a total of 1,190 reentrancy vulnerabilities in the 13,443 contracts that contained a call function. 
+\todo[inline]{How many contracts were flagged with reentrancy? The percentage of contracts with reentrancy is more important than the average reentrancy vulnerabilities.}
+We have an average of 0.19 reentrancy vulnerabilities per contract when looking at the collection of contracts with this call functionality. 
+\todo[inline]{What is the median?}
+The worst example in our dataset was the contract called
+\textit{PostExperiationIdentifierTransformationFinancialProductLibrary}\footnote{\url{https://etherscan.io/address/0xAb955711ECd766Ce70dc2DbF2D9e0E8e4b431232\#code}} which contained 38 reentrancy vulnerabilities. 
+
+The reentrancy vulnerability is thus still prevalent in contracts using a call value function up until this day.\todo[inline]{Is it? 1,190 is not even 10\% of the 13K contracts, and that is assuming you only have 1 reentrancy per contract. I would rephrase that by saying it is still occurring but not as common.}
+
+We contrasted the reentrancy numbers for contracts with a call against contracts without a call function. Even without call, a contract may still face reentrancy issues by using functions from other contracts (which would transfer the control to the called contract). Only 231 had a reentrancy vulnerability which was significantly less then the contracts with a call function, on average we had about 0.05 reentrancy vulnerabilities per contract that did not contain a call function. 
+\todo[inline]{231 out of how many contracts? And 231 is the number of reentrancies detected or the number of contracts with reentrancy? Are you sure it is 0.05? To me 231 /  13K = 0.01}
+
+%% Henrique: It is not really important, since they are a subset of Call contracts
+%\begin{table}
+%\center
+%  \caption{Contracts (containing a call function) with Reentrancies - Lines of Code}
+%  \label{tab:re-loc}
+%  \begin{tabular}{c c c c c}
+%    \hline
+%    Min & Median & Average & Std. Dev. & Max \\
+%    \hline
+%   11 & 639 & 672 & 530 & 5,225 \\
+%  \hline
+%\end{tabular}
+%\end{table}
+
+
+
 \subsection{Contracts using Transfer}
 
 Now, we focus only on the contracts that contain a transfer function. Transfer is a much safer alternative than call for Ether exchange. Therefore, we expect the contracts using transfer to have different characteristics than the ones using call.
@@ -659,23 +689,6 @@ Table~\ref{tab:send} show the Ether exchange and guard methods considering only 
 \end{tabular}
 \end{table}
 
-\subsection{Contracts with a Reentrancy vulnerability}
-
-As a last analysis we will take a look at reentrancy vulnerabilities in contracts that contain a call function. The tool slither~\cite{slither} will be used to complete this task and detect the reentrancies in these contracts.
-A total of 1,190 reentrancy vulnerabilities were found in a total of 13,443 contracts that contained a call function. In table~\ref{tab:re-loc} we can see that even a contract of only 11 lines of code can contain a reentrancy vulnerability. We have an average of 0.19 reentrancy vulnerabilities per contract when looking at the collection of contracts with this call functionality. A contract called 
- \textit{PostExperiationIdentifierTransformationFinancialProductLibrary}\footnote{\url{https://etherscan.io/address/0xAb955711ECd766Ce70dc2DbF2D9e0E8e4b431232\#code}} even contained 38 reentrancy vulnerabilties. The reentrancy vulnerability is thus still prevalent in contracts using a call value function up until this day. Out of the contracts without a call function only 231 had a reentrancy vulnerability which was significantly less then the contracts with a call function, on average we had about 0.05 reentrancy vulnerabilities per contract that did not contain a call function. 
-\begin{table}
-\center
-  \caption{Contracts (containing a call function) with Reentrancies - Lines of Code}
-  \label{tab:re-loc}
-  \begin{tabular}{c c c c c}
-    \hline
-    Min & Median & Average & Std. Dev. & Max \\
-    \hline
-   11 & 639 & 672 & 530 & 5,225 \\
-  \hline
-\end{tabular}
-\end{table}
 
 \section{Related work}\label{sec:related-work}
 
