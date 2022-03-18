@@ -41,7 +41,7 @@
 \usepackage{listings}
 \usepackage{courier}
 \usepackage{xurl}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 \usepackage{relsize,xspace}
 \usepackage{fancyhdr}%construct and control page headers and footers
 
@@ -103,36 +103,23 @@
 %% The "title" command has an optional parameter,
 %% allowing the author to define a "short title" to be used in page headers.
 %\title{Solidity Smart Contracts: Language constructs for control/currency exchange and guards}
-\title{An Exploratory Study on Solidity Guards and Ether Exchange Constructs}
+\title{An Exploratory Study on Solidity Ether Exchange Constructs}
 
 % Double blind Workshop - No author information in this version
 
 
-%\author{
-%\IEEEauthorblockN{Darin Verheijke}
-%\IEEEauthorblockA{\textit{Department of Computer Science} \\
-%\textit{University of Antwerp}\\
-%Antwerp, Belgium \\
-%darin.verheijke@student.uantwerpen.be}
-%\and
-%\IEEEauthorblockN{Henrique Rocha}
-%\IEEEauthorblockA{\textit{Department of Computer Science} \\
-%\textit{Loyola University Maryland}\\
-%Baltimore, USA \\
-%henrique.rocha@gmail.com}
-%}
 \author{
-\IEEEauthorblockN{Placeholder 1st Author}
-\IEEEauthorblockA{\textit{Department 1} \\
-\textit{Affiliation 1}\\
-City, Country \\
-author1@email.com}
+\IEEEauthorblockN{Darin Verheijke}
+\IEEEauthorblockA{\textit{Department of Computer Science} \\
+\textit{University of Antwerp}\\
+Antwerp, Belgium \\
+darin.verheijke@student.uantwerpen.be}
 \and
-\IEEEauthorblockN{Placeholder 2nd Author}
-\IEEEauthorblockA{\textit{Department 2} \\
-\textit{Affiliation 2}\\
-City,  Country \\
-author2@email.com}
+\IEEEauthorblockN{Supervisor: Henrique Rocha}
+\IEEEauthorblockA{\textit{Department of Computer Science} \\
+\textit{Loyola University Maryland}\\
+Baltimore, USA \\
+henrique.rocha@gmail.com}
 }
 
 
@@ -148,7 +135,7 @@ Ethereum is a blockchain platform that enables the use of smart contracts. Smart
 \end{abstract}
 
 \begin{IEEEkeywords}
-Smart Contracts, Solidity,  Call,  Transfer,  Guards.
+Ethereum,  Smart Contracts, Solidity,  Call,  Transfer,  Guards.
 \end{IEEEkeywords}
 
 
@@ -167,23 +154,27 @@ Solidity is one of the major programming languages for smart contracts on Ethere
 
 In this paper, we conduct an exploratory research investigating how these calling functions are used in practice and if they are still commonly used for the current smart contracts being deployed in the Ethereum network. For this study, we collected a dataset of \totalContracts unique open-source verified smart contracts from Etherscan (from 2012-07-07 to 2022-01-06). We present different characteristics for the contracts and the Solidity language constructs being used.
 
+This paper is an extension of the paper accepted for publication at WETSEB 2022~\cite{darin2022}. In this version, we extended the background and related work sections with more content. We also added results on reentrancies vulnerabilities flagged by the tool slither, in our contracts. 
 
-\section{Background}
+The remainder of the paper is organized as follows. In Section~\ref{sec:background}, we explain some important concepts about Solidity, its language constructs, and Reentrancy attack. In Section~\ref{sec:study-design}, we describe our dataset and our research method. Section~\ref{sec:results} presents the results from our exploratory study and a general analysis of them. Section~\ref{sec:related-work} discusses the related work. Finally, in Section~\ref{sec:conclusion}, we present our final remarks and outline future work ideas.
+
+
+
+\section{Background}\label{sec:background}
 An introduction to some important concepts such as blockchain, the consensus mechanism used in Ethereum, smart contracts and reentrancy attacks is given. The scope of these concepts will be kept to the Ethereum blockchain and one of its programming languages Solidity~\cite{solidity}.
 
 \subsection{Blockchain}
 A blockchain is a decentralized, distributed and immutable ledger that differs from a typical database in the way that it stores information. All recorded transactions, structured in blocks, are linked together using cryptography. Each block will contain a hash of the previous block, a timestamp and transaction data. As each block contains information from the previous block due to the hash, they will form a chain, thus forming a blockchain~\cite{article}. It is a peer-to-peer network connecting participants. These participants will be forced to cooperate using a consensus mechanism which enforces rules in order to decentralize control.
 
 \subsection{Consensus mechanisms}
-\todo[inline]{Wall of text. Break the text bellow into at least 3 paragraphs.}
 
 A blockchain reaches consensus when at least 51\% of the nodes on the network agree on the next state of the network. These consensus mechanisms are designed to prevent 51\% attacks on the network. Executing a 51\% attack would require the attacker to have 51\% of the nodes on the network which is considered theoretically impossible due to the decentralized nature of a blockchain but would allow the attacker to decide on the next state of the network by himself due to controlling over half of the nodes and thus choosing which state is correct. 
 
 
-Currently, Ethereum uses a proof-of-work consensus mechanism which defines the work that miners (network operators) have to do add a new valid block to the chain. The 'work' they do is a cryptographic math puzzle where the winner (i.e. the fastest to solve the puzzle) earns a reward and shares the new block with the rest of the network. This concept is called 'mining' and has as purpose to secure the blockchain with as incentive newly minted currency of the respective blockchain as a way to reward those who contribute to the system.
+Currently, Ethereum uses a proof-of-work consensus mechanism which defines the work that miners (network operators) have to do add a new valid block to the chain. The 'work' they do is a cryptographic math puzzle where the winner (i.e. the first to solve the puzzle) earns a reward and shares the new block with the rest of the network. This concept is called 'mining' and has as purpose to secure the blockchain with as incentive newly minted currency of the respective blockchain as a way to reward those who contribute to the system.
 
 
-There has been some criticism on POW due to the amount of energy used and needed to keep the network safe. The Ethereum network consumes 73.2 TWh annually which is comparable to the amount of energy used in Belgium which is 82.16 TWh. Ethereum thus plans to move to proof-of-stake which at a high level has the same end-goal as POW. Very briefly explained, miners will be replaced with validators who can stake their Ether to activate the ability to create new blocks. This consensus mechanism should also have a stronger immunity to centralization as POS should lead to more nodes in the network. For more information on the POS consensus mechanism and Ethereum their change to it we refer to the documentation~\cite{ethereum,  white_paper}.
+There has been some criticism on POW due to the amount of energy used and needed to keep the network safe. The Ethereum network consumes 73.2 TWh annually which is comparable to the amount of energy used in Belgium which is 82.16 TWh. Ethereum thus plans to move to proof-of-stake which at a high level has the same end-goal as POW. Very briefly explained, miners will be replaced with validators who can stake their Ether to activate the ability to create new blocks. This consensus mechanism should also have a stronger immunity to centralization as POS should lead to more nodes in the network~\cite{ethereum,  white_paper}.
 
 \subsection{Ethereum \& Smart contracts}
 
@@ -194,7 +185,7 @@ Ether is the cryptocurrency used to pay for transactions on the network~\cite{ma
 %In comparison to bitcoin, Ether is designed to be a utility currency which is used to call transactions on the Ethereum platform as a sort of fee~\cite{mastering}.
 
 Ethereum has two account types,  external accounts (i.e., users) and contracts. Externally-owned accounts can be controlled by anyone who has the private keys to this account while smart contracts are deployed to the network and are controlled by code.
-Smart contracts can be used to create a range of dApps.  An important feature of smart contracts is that when a function is called and the conditions for that function are met there is an automatic execution of the set instructions without any intermediary party~\cite{ethereum, white_paper}.
+Smart contracts can be used to create a range of decentralized applications (dApps).  An important feature of smart contracts is that when a function is called and the conditions for that function are met there is an automatic execution of the set instructions without any intermediary party~\cite{ethereum, white_paper}.
 
 Consider the vending machine example introduced by Szabo~\cite{nick}. A simple vending machine will take in coins, and via a simple mechanism dispense change and the output we selected. How a vending machine removes the need for a vendor employee, smart contracts remove the need for an intermediary party. Important properties of smart contracts are immutability and determinism. Immutable because once deployed, due to the nature of how a blockchain works, it is not possible to change the smart contract code (although its internal state may change). The only way to modify a smart contract code is to deploy a new instance (and thus a new smart contract). Deterministic in the way the outcome after is identical for everyone who, given the same transaction parameters and state of the Ethereum blockchain, executes the contract~\cite{white_paper}.
 
@@ -257,14 +248,14 @@ This version repeatedly calls the involved function before the first invocation 
 mapping (address => uint) private userBalances;
 
 function withdrawBalance() public {
-    uint amountToWithdraw = userBalances[msg.sender];
-    (bool succes, ) = msg.sender.call.value(amountToWithdraw)("");
-    require(success);
-    userBalances[msg.sender] = 0;
-    }
+  uint amountToWithdraw = userBalances[msg.sender];
+  (bool succes, ) = msg.sender.call.value(amountToWithdraw)("");
+  require(success);
+  userBalances[msg.sender] = 0;
+}
 // Fallback function which gets executed
 function () public payable {
-    withdrawBalance()
+  withdrawBalance()
 }
 \end{lstlisting}
 
@@ -277,16 +268,16 @@ When a function shares a state with another function there is a possibility of a
 mapping (address => uint) private userBalances;
 
 function transfer(address to, uint amount) {
-    if (userBalances[msg.sender] >= amount) {
-        userBalances[to] += amount;
-        userBalances[msg.sender] -= amount;
-        }
-    }
+  if (userBalances[msg.sender] >= amount) {
+    userBalances[to] += amount;
+    userBalances[msg.sender] -= amount;
+  }
+}
 function withdrawBalance() public {
-    uint amountToWithdraw = userBalances[msg.sender];
-    (bool succes, ) = msg.sender.call.value(amountToWithdraw)("");
-    require(success);
-    userBalances[msg.sender] = 0;
+  uint amountToWithdraw = userBalances[msg.sender];
+  (bool succes, ) = msg.sender.call.value(amountToWithdraw)("");
+  require(success);
+  userBalances[msg.sender] = 0;
 }
 
 \end{lstlisting}
@@ -309,21 +300,17 @@ However, even if we used the unsafe \textit{call} method instead of transfer, th
 
 \begin{lstlisting}[language=Solidity, caption=Checks Effects Interactions pattern, label={lst:cei}]
 contract ChecksEffectsInteractions {
+  mapping(address => uint) balances; /* Stores user balances */
     
-    mapping(address => uint) balances; // Stores user balances
-    
-    function deposit() public payable {
-        balances[msg.sender] = msg.value;
-        }
-    function withdraw(uint amount) public {
-        require(balances[msg.sender] >=amount); // Checks
-        
-        balances[msg.sender] -= amount; // Effects
-        
-        msg.sender.transfer(amount); // Interactions
-    }
+  function deposit() public payable {
+    balances[msg.sender] = msg.value;
+  }
+  function withdraw(uint amount) public {
+    require(balances[msg.sender] >=amount);//Checks
+    balances[msg.sender] -= amount; // Effects
+    msg.sender.transfer(amount); // Interactions
+  }
 }
-
 \end{lstlisting}
 
 \subsubsection{Guard Check pattern}
@@ -338,24 +325,23 @@ Revert() function always throws an exception and is used in different scenarios 
 
 \begin{lstlisting}[language=Solidity, caption=Guard Check pattern, label={lst:guard}]
 contract GuardCheck {
-     function deposit(address addr) payable public {
-        require(addr != address(0)); // Ensures address is not 0 and that the user has specified an address to deposit too
-        require(msg.value !=0 ); // Ensures that their is a value attached to the transaction, else we stop right here
+  function deposit(address addr) payable public {
+   require(addr != address(0)); // Ensures address is not 0 and that the user has specified an address to deposit too
+   require(msg.value !=0 ); // Ensures that their is a value attached to the transaction, else we stop right here
         
-        uint balanceBeforeTransfer = this.balance;
-        uint transferAmount;
+   uint balanceBeforeTransfer = this.balance;
+   uint transferAmount;
         
-        if (addr.balance < msg.sender.balance) {
-            transferAmount = msg.value;
-        }
-        else {
-            revert(); // We only send money if the address we want to send too has less money than us
-        }
+   if (addr.balance < msg.sender.balance) {
+     transferAmount = msg.value;
+   }
+   else {
+     revert(); // We only send money if the address we want to send too has less money than us
+   }
         
-        addr.transfer(transferAmount);
-        assert(this.balance == balanceBeforeTransfer - transferAmount); // Makes sure that the current balance after the deposit is equal to the balance before minus the deposited amount. 
-     }
-     
+   addr.transfer(transferAmount);
+   assert(this.balance == (balanceBeforeTransfer-transferAmount)); // Makes sure that the current balance after the deposit is equal to the balance before minus the deposited amount. 
+  }  
 }
 \end{lstlisting}
 
@@ -366,28 +352,27 @@ Another way of protecting the state of a contract is by adding a mutex, which is
 We show an example of mutex in Listing~\ref{lst:mutex}. The mutex stops the exploit of recursive calls and avoids a cross-function reentrancy attack. Note that it is important to ensure a way for a lock to be released as a contract without the release of its lock can be rendered inert.
 
 \begin{lstlisting}[language=Solidity, caption=Mutual exclusion, label={lst:mutex}]
-
 contract Mutex {
-    mapping(address => uint) balances; // Stores user balances
+  mapping(address => uint) balances; // Stores user balances
 
-    function transfer(address to, uint amount) external {
-        require(!lock);
-        lock = true;
+  function transfer(address to, uint amount) external {
+    require(!lock);
+    lock = true;
         
-        if (balances[msg.sender] >= amount) {
-            balances[to] += amount;
-            balances[msg.sender] -= amount;
-        }
-        lock = false;
-    }
-    function withdraw() external {
-        require (!lock);
-        lock = true;
-        uint amount = balances[msg.sender];
-        require(msg.sender.call.value(amount)());
-        balances[msg.sender] = 0;
+    if (balances[msg.sender] >= amount) {
+      balances[to] += amount;
+      balances[msg.sender] -= amount;
     }
     lock = false;
+  }
+  function withdraw() external {
+    require (!lock);
+    lock = true;
+    uint amount = balances[msg.sender];
+    require(msg.sender.call.value(amount)());
+    balances[msg.sender] = 0;
+    lock = false;
+  }
 }
 \end{lstlisting}
 
@@ -405,7 +390,9 @@ There were now two child DAO's which controlled the funds but were still time-lo
 
 \subsubsection{Other notable attacks}
 More recent examples of reentrancy attacks are the uniswap/lendf.me hacks where 25 million dollar got drained in April of 2020~\cite{lendf}, cream finance hack in August of 2021 where 18.8 million dollar was stolen by exploiting a reentrancy vulnerability that allowed two borrows while doing a flash loan~\cite{cream}.
-\section{Study Design}
+
+
+\section{Study Design}\label{sec:study-design}
 \subsection{Dataset}
 
 We collected verified smart contracts from Etherscan\footnote{\url{etherscan.io/contractsVerified}} which is a block explorer and analytic platform for Ethereum. Etherscan verified contracts allows the public to audit and read contracts as it has to be made publicly available to be granted the verified status. Etherscan does not give access to a complete dataset of verified smart contracts but rather has an open-source database of the latest 10,000-5,000 smart contracts that were verified. Therefore, we gathered the latest contracts from time to time, over a period of six months (2021-07-07 to 2022-01-06) to build our dataset.
@@ -425,7 +412,7 @@ https://api.etherscan.io/api?module=contract
 
 Then, we used the cloc tool on the contracts to discover how many lines of code are in each one. We removed from this study the contracts that cloc were not able to process. Moreover, we used a Python script on the contracts to locate specific methods used in the contracts related to Ether exchange functions (call, send, and transfer) and guards (require, assert, revert).
 
-\section{Analysis and Results}
+\section{Analysis and Results}\label{sec:results}
 
 \subsection{Overall Analysis}
 
@@ -681,7 +668,7 @@ A total of 1,190 reentrancy vulnerabilities were found in a total of 13,443 cont
 \end{tabular}
 \end{table}
 
-\section{Related work}
+\section{Related work}\label{sec:related-work}
 
 
 Juels, Kosba and Shi\cite{criminal} investigate the risk of smart contracts fueling new criminal ecosystems. They show how a Criminal Smart Contract can facilitate leakage of confidential information, theft of cryptographic keys, and more, showing the urgency of creating safeguards against these CSCs. They look at questions like how practical these new crimes will be, whether these CSCs enable a wider range of new crimes in comparison to earlier cryptocurrencies such as Bitcoin, and what advantages they offer to criminals in comparison with the conventional online systems.
@@ -710,7 +697,7 @@ A deep-learning-based approach is used by Qian et al. \cite{automated}. The aim 
 
 Slither by Feist et al. \cite{slither} is a static analysis framework that converts Solidity smart contracts into an intermediate representation which they call SlithIR. Static Single Assignment forms are used as well as a reduced instruction set for ease of implementation. Their framework has use cases in automated detection of vulnerabilities, detection of code optimization opportunities, improvement of clarity and ease of understanding of the contracts. An evaluation of the proposed frameworks capabilities is done using a set of real-world smart contracts. 
 
-\section{Final Remarks}
+\section{Conclusion}\label{sec:conclusion}
 
 In this paper, we conducted an exploratory study on the usage of specific Solidity language constructs in a dataset of \totalContracts contracts. Even though, call is the unsafest method for Ether exchange it is the most popular method being used by 50\% of contracts. Perhaps because call can be used to transfer the execution control to another contract, and not only for ether exchange, is the reason for its popularity despite the fact that it is unsafe. The other methods for ether exchange, transfer is used by 34\% of contracts, and send is rarely used (2\% of the contracts).
 
