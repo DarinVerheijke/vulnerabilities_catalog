@@ -723,13 +723,15 @@ Slither by Feist et al. \cite{slither} is a static analysis framework that conve
 
 In this paper, we conducted an exploratory study on the usage of specific Solidity language constructs in a dataset of \totalContracts contracts. Even though, call is the unsafest method for Ether exchange it is the most popular method being used by 50\% of contracts. Perhaps because call can be used to transfer the execution control to another contract, and not only for ether exchange, is the reason for its popularity despite the fact that it is unsafe. The other methods for ether exchange, transfer is used by 34\% of contracts, and send is rarely used (2\% of the contracts).
 
+In our analysis on guards, require is the most popular one being used in 97\% of all contracts. On average, each contract uses 23 instances of require. The high number of require usage combined with other guards, is anecdotal evidence that Solidity developers are concerned with the security of their contracts by using guards to prevent possible exploits.
+
 The most popular Solidity versions in our dataset were 0.8.4 (18.7\% of the contracts), 0.6.12 (17.1\% of the contracts), and 0.8.7 (15.3\% of the contracts). We also saw that the usage of call, transfer, assert, and revert can vary a lot from different versions of the contract.
 
-When we focused on only contracts using call, the average and median size in LoC of the contracts are higher than normal. We also noticed an increased percentage of call contracts using more guard methods.
+When we focused on only contracts using call, the average and median size in LoC of the contracts are higher than normal. We also noticed an increased percentage of call contracts using more guard methods.  This may be an indication that Solidity developers are concerned about the security of their contracts especially when using unsafe methods such as call.
 
-A reentrancy check on the contracts containing the vulnerable call functionality using the tool Slither showed us that reentrancy vulnerabilities are still present in contracts even to this date.  
+A reentrancy check on the contracts containing the unsafe call functionality showed that reentrancy vulnerabilities are still present in contracts even to this date.  \todo[inline]{Revise this after the Reentrancy Results is updated/revised.}
 
-As future work, we plan to execute more vulnerability detection tools to further investigate the characteristics of the contracts in our dataset.
+As future work, we plan to execute vulnerability detection tools to further investigate the characteristics of the contracts in our dataset.  We also plan to investigate different metrics besides Lines of Code.
 
 
 %%
