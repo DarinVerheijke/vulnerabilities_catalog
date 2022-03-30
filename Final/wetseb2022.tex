@@ -416,7 +416,6 @@ Then, we used the cloc tool on the contracts to discover how many lines of code\
 
 \section{Analysis and Results}\label{sec:results}
 
-\todo[inline]{Please, also change the figures in this version to have labels for the y and x-axis.}
 
 
 \subsection{Overall Analysis}
@@ -487,7 +486,7 @@ Figure~\ref{fig:minor-versions} shows the top-10 solidity versions (major and mi
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{img/versions_clean.png}
+  \includegraphics[width=\linewidth]{img/clean_versions_final.png}
   \caption{Top-10 Solidity versions in the database.}
   %\description{Solidity Compiler Version}
   \label{fig:minor-versions}
@@ -537,7 +536,7 @@ Figure~\ref{fig:call_version} shows the Solidity versions for contracts with cal
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{img/call_clean_v2.png}
+  \includegraphics[width=\linewidth]{img/call_clean_final.png}
   \caption{Top-10 Solidity versions on Contracts using Call. }
   %\description{Solidity Compiler Version}
   \label{fig:call_version}
@@ -563,17 +562,15 @@ Table~\ref{tab:call} show the Ether exchange and guard methods considering only 
 
 \textbf{Reentrancy.} As we explained before, the call function is the unsafest construct for ether exchange, and it may leave the contract vulnerable to reentrancy. Therefore, we decided to use the tool slither~\cite{slither} for detecting possible reentrancies in contracts that use call. 
 
-We found a total of 1,190 reentrancy vulnerabilities in the 13,443 contracts that contained a call function. 
-\todo[inline]{How many contracts were flagged with reentrancy? The percentage of contracts with reentrancy is more important than the average reentrancy vulnerabilities.}
+A total of 1,990 contracts were flagged with atleast 1 reentrancy vulnerability out of the 13,443 contracts that contained a call function, this comes down to about 8.8\%
 We have an average of 0.19 reentrancy vulnerabilities per contract when looking at the collection of contracts with this call functionality. 
-\todo[inline]{What is the median?}
 The worst example in our dataset was the contract called
 \textit{PostExperiationIdentifierTransformationFinancialProductLibrary}\footnote{\url{https://etherscan.io/address/0xAb955711ECd766Ce70dc2DbF2D9e0E8e4b431232\#code}} which contained 38 reentrancy vulnerabilities. 
 
-The reentrancy vulnerability is thus still prevalent in contracts using a call value function up until this day.\todo[inline]{Is it? 1,190 is not even 10\% of the 13K contracts, and that is assuming you only have 1 reentrancy per contract. I would rephrase that by saying it is still occurring but not as common.}
+The reentrancy vulnerability is thus still occuring but not as common in contracts using a call value function up until this day.
 
-We contrasted the reentrancy numbers for contracts with a call against contracts without a call function. Even without call, a contract may still face reentrancy issues by using functions from other contracts (which would transfer the control to the called contract). Only 231 had a reentrancy vulnerability which was significantly less then the contracts with a call function, on average we had about 0.05 reentrancy vulnerabilities per contract that did not contain a call function. 
-\todo[inline]{231 out of how many contracts? And 231 is the number of reentrancies detected or the number of contracts with reentrancy? Are you sure it is 0.05? To me 231 /  13K = 0.01}
+We contrasted the reentrancy numbers for contracts with a call against contracts without a call function. Even without call, a contract may still face reentrancy issues by using functions from other contracts (which would transfer the control to the called contract). Only 231 out of 13356 contracts without a call function had a reentrancy vulnerability which being only 1.7\% was significantly less then the contracts with a call function. With a total of 707 vulnerabilities in all contracts, on average we have about 0.05 reentrancy vulnerabilities present in a contract that does not contain a call function. 
+
 
 %% Henrique: It is not really important, since they are a subset of Call contracts
 %\begin{table}
@@ -615,7 +612,7 @@ Figure~\ref{fig:transfer_version} shows the solidity versions for contracts that
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{img/send_versions_clean.png}
+  \includegraphics[width=\linewidth]{img/transfers_clean_final.png}
   \caption{Top-10 Solidity versions on Contracts using Transfer.}
   %\description{Solidity Compiler Version (Sends)}
   \label{fig:transfer_version}
@@ -665,7 +662,7 @@ The most common Solidity versions for contracts using send were 0.8.7,  0.8.4,  
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\linewidth]{img/transfer_versions_clean.png}
+  \includegraphics[width=\linewidth]{img/sends_clean_final.png}
   \caption{Top-10 Solidity versions on Contracts using Send.}
   \label{fig:send_version}
 \end{figure}
@@ -729,8 +726,7 @@ The most popular Solidity versions in our dataset were 0.8.4 (18.7\% of the cont
 
 When we focused on only contracts using call, the average and median size in LoC of the contracts are higher than normal. We also noticed an increased percentage of call contracts using more guard methods.  This may be an indication that Solidity developers are concerned about the security of their contracts especially when using unsafe methods such as call.
 
-A reentrancy check on the contracts containing the unsafe call functionality showed that reentrancy vulnerabilities are still present in contracts even to this date.  \todo[inline]{Revise this after the Reentrancy Results is updated/revised.}
-
+A reentrancy check on the contracts containing the unsafe call functionality showed that reentrancy vulnerabilities are still present in contracts even to this date, although it is not as common as on average only about 8.8\% of the contracts containing a call function will have a reentrancy vulnerability. 
 As future work, we plan to execute vulnerability detection tools to further investigate the characteristics of the contracts in our dataset.  We also plan to investigate different metrics besides Lines of Code.
 
 
