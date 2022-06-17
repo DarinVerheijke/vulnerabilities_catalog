@@ -8,4 +8,6 @@ In the file [dataset_wetseb_contracts_by_version.xlsx](dataset_wetseb_contracts_
 
 There is an online version (GoogleDoc) of the main dataset [on here](https://bit.ly/3fyOgBD). The online version has no formulas, and no additional sheets.
 
+A dataset containing the contract addresses and the Etherscan pulled source codes can be found [on here](https://drive.google.com/file/d/1r4didSrIRc_0pJn629rmOgVXmrj6comp/view?usp=sharing).
+
 Any questions please contact us, the authors (our email is on the paper).
